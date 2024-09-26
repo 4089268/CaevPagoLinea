@@ -1,4 +1,5 @@
 using CAEV.PagoLinea.Data;
+using CAEV.PagoLinea.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,6 +9,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<PagoLineaContext>(options=>{
     options.UseSqlServer( builder.Configuration.GetConnectionString("PagoLinea") );
 });
+builder.Services.AddScoped<ArquosService>();
 
 var app = builder.Build();
 

@@ -5,7 +5,7 @@ using CAEV.PagoLinea.Models;
 
 namespace CAEV.PagoLinea.Data
 {
-    class PagoLineaContext : DbContext {
+    public class PagoLineaContext : DbContext {
 
         public DbSet<CuentaPadron> CuentasPadron {get;set;} = default!;
 
