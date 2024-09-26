@@ -32,6 +32,11 @@
             1.- Constula tu saldo
         </div>
         <div class="card-body">
+            @if (!String.IsNullOrEmpty(ViewBag.ErrorMessage)){
+                <div class="alert alert-warning" role="alert">
+                    @ViewBag.ErrorMessage
+                </div>
+            }
             @using (Html.BeginForm("Index", "Invoice", FormMethod.Post)){
                 <div class="mb-3">
                     <label for="localidad" class="form-label">Localidad</label>

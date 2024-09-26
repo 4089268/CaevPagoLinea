@@ -9,7 +9,6 @@ namespace CAEV.PagoLinea.Models {
     public class InvoiceRequest
     {
         [Required(ErrorMessage = "El codigo de Localidad es requerido.")]
-        [Range(1, 1, ErrorMessage = "El codigo de Localidad debe ser 1")]
         public int Localidad { get; set; }
 
 

@@ -4,6 +4,7 @@ using CAEV.PagoLinea.Models;
 using CAEV.PagoLinea.Data;
 using CAEV.PagoLinea.Services;
 using System.Reflection.Metadata.Ecma335;
+using Microsoft.EntityFrameworkCore;
 
 namespace CAEV.PagoLinea.Controllers;
 
@@ -38,14 +39,15 @@ public class HomeController : Controller
 
     public ActionResult LoadPadron(){
 
-        var idLocalidad = 1;
-
         var padron = this.arquosService.GetPadron();
+
+        this.context.CuentasPadron.ExecuteDelete();
+        this.context.SaveChanges();
         
         foreach( var p in padron){
             var newRecord = new CuentaPadron(){
-                IdLocalidad = idLocalidad,
-                Localidad = p.Ciudad,
+                IdLocalidad = p.IdLocalidad,
+                Localidad = p.Localidad,
                 IdPadron = p.IdPadron,
                 IdCuenta = p.IdCuenta,
                 RazonSocial = p.RazonSocial,
@@ -59,8 +61,8 @@ public class HomeController : Controller
             this.context.CuentasPadron.Add(newRecord);
         }
 
-        var accounts = this.context.SaveChanges();
-
+        ViewBag.Total = this.context.SaveChanges();
+        
         return View();
     }
 

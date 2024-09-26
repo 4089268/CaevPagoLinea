@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Globalization;
 using Microsoft.EntityFrameworkCore;
 
 namespace CAEV.PagoLinea.Models
@@ -28,6 +29,10 @@ namespace CAEV.PagoLinea.Models
         public string PeriodoFactura {get;set;} = "";
         public DateTime CreatedAt {get;set;}
         public DateTime UpdatedAt {get;set;}
+
+        public string TotalFormated {
+            get => Total.ToString("c2", new CultureInfo("es-MX"));
+        }
     
     }
 

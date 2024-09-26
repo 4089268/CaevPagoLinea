@@ -10,6 +10,7 @@ builder.Services.AddDbContext<PagoLineaContext>(options=>{
     options.UseSqlServer( builder.Configuration.GetConnectionString("PagoLinea") );
 });
 builder.Services.AddScoped<ArquosService>();
+builder.Services.AddScoped<PadronService>();
 
 var app = builder.Build();
 

@@ -1,42 +1,55 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using CAEV.PagoLinea.Models;
+using CAEV.PagoLinea.Services;
 
 namespace CAEV.PagoLinea.Controllers;
 
 public class InvoiceController : Controller
 {
     private readonly ILogger<InvoiceController> _logger;
+    private readonly PadronService padronService;
 
-    public InvoiceController(ILogger<InvoiceController> logger)
+    public InvoiceController(ILogger<InvoiceController> logger, PadronService padronService)
     {
         _logger = logger;
+        this.padronService = padronService;
     }
 
     [HttpGet]
     public ActionResult Index()
     {
         return View( new InvoiceRequest(){
-            Localidad = 1,
-            Cuenta = 12,
+            Localidad = 275,
+            Cuenta = 1,
         });
     }
 
     [HttpPost]
     public ActionResult Index(InvoiceRequest model)
     {
-        if (ModelState.IsValid)
-        {
-            // Store data in TempData
-            TempData["Localidad"] = model.Localidad;
-            TempData["Cuenta"] = model.Cuenta;
+        if (!ModelState.IsValid){
+            return View("Index");
+        }
 
-            // You can access model.Localidad and model.Cuenta
-            return RedirectToAction("InvoiceData");
+        // * validate if padron exist
+        var padron = this.padronService.GetPadron(model.Localidad, model.Localidad);
+        if( padron == null){
+            
+            ViewBag.ErrorMessage = "No se encontró coincidencias en el sistema";
+            
+            // Return the view with the model to show validation errors
+            return View(model);
         }
         
-        // If validation fails, return the view with the model to display errors
-        return View("Index");
+        
+        // Store data in TempData
+        TempData["Localidad"] = model.Localidad;
+        TempData["Cuenta"] = model.Cuenta;
+
+        // You can access model.Localidad and model.Cuenta
+        return RedirectToAction("InvoiceData");
+
     }
 
 
@@ -45,6 +58,9 @@ public class InvoiceController : Controller
         // Retrieve data from TempData
         int? localidad = TempData["Localidad"] as int?;
         int? cuenta = TempData["Cuenta"] as int?;
+
+        // * get the padron
+        var padron = this.padronService.GetPadron( localidad!.Value, cuenta!.Value);
         
         // Check if data exists
         if (localidad.HasValue && cuenta.HasValue) {
@@ -55,6 +71,6 @@ public class InvoiceController : Controller
             ViewBag.Message = "No data available.";
         }
 
-        return View();
+        return View(padron);
     }
 }

@@ -14,7 +14,8 @@ namespace CAEV.PagoLinea.Models
         public decimal Total { get; set; }
         public string MesFacturado { get; set; } = default!;
         public string Direccion { get; set; } = default!;
-        public string Ciudad { get; set; } = default!;
+        public int IdLocalidad { get; set; }
+        public string Localidad { get; set; } = default!;
 
         public static PadronRecord FromDataReader(IDataReader reader ){
             var record = new PadronRecord {
@@ -27,7 +28,8 @@ namespace CAEV.PagoLinea.Models
                 Total = reader["total"] != DBNull.Value ? Convert.ToDecimal(reader["total"]) : 0m,
                 MesFacturado = reader["_mesFacturado"] != DBNull.Value ? reader["_mesFacturado"].ToString() : string.Empty,
                 Direccion = reader["direccion"] != DBNull.Value ? reader["direccion"].ToString() : string.Empty,
-                Ciudad = reader["ciudad"] != DBNull.Value ? reader["ciudad"].ToString() : string.Empty
+                IdLocalidad = reader["id_localidad"] != DBNull.Value ? Convert.ToInt32(reader["id_localidad"]) : 0,
+                Localidad = reader["_poblacion"] != DBNull.Value ? reader["_poblacion"].ToString() : string.Empty
             };
             return record;
         }

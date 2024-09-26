@@ -2,7 +2,7 @@
     ViewData["Title"] = "Pago en Linea";
 }
 
-@model CAEV.PagoLinea.Models.InvoiceRequest
+@model CAEV.PagoLinea.Models.CuentaPadron
 
 <div class="text-center">
     <h1 class="display-4">Pago en linea</h1>
@@ -32,7 +32,37 @@
             2.- Comprueba tus datos
         </div>
         <div class="card-body">
-            <p>@ViewBag.Message</p>
+            @using (Html.BeginForm("Index", "Invoice", FormMethod.Post)){
+                <div class="mb-3">
+                    <label for="localidad" class="form-label">Localidad</label>
+                    @Html.TextBoxFor(model => model.Localidad, new { @class = "form-control", @disabled="true" })
+                </div>
+                <div class="mb-3">
+                    <label for="cuenta" class="form-label">Cuenta</label>
+                    @Html.TextBoxFor(model => model.IdCuenta, new { @class = "form-control", @disabled="true" })
+                </div>
+                <div class="mb-3">
+                    <label for="cuenta" class="form-label">Razon Social</label>
+                    @Html.TextBoxFor(model => model.RazonSocial, new { @class = "form-control", @disabled="true" })
+                </div>
+                <div class="mb-3">
+                    <label for="cuenta" class="form-label">Total</label>
+                    @Html.TextBoxFor(model => model.TotalFormated, new { @class = "form-control", @disabled="true" })
+                </div>
+                <div class="mb-3">
+                    <label for="cuenta" class="form-label">Periodo Factura</label>
+                    @Html.TextBoxFor(model => model.PeriodoFactura, new { @class = "form-control", @disabled="true" })
+                </div>
+
+                <div class="mb-3">
+                    <label for="cuenta" class="form-label">Ultima Actualizacion</label>
+                    @Html.TextBoxFor(model => model.UpdatedAt, new { @class = "form-control", @disabled="true" })
+                </div>
+
+                <div class="d-flex justify-content-center">
+                    <input class="btn btn-primary btn-lg btn-success" type="submit" value="Consultar Cuenta" />
+                </div>
+            }
         </div>
     </div>
 

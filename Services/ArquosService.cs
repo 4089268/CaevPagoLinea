@@ -20,17 +20,19 @@ namespace CAEV.PagoLinea.Services
             List<PadronRecord> records = new();
 
             string query = @"
-                SELECT id_padron,
-                    id_cuenta,
-                    razon_social,
-                    _localizacion,
-                    subtotal,
-                    iva,
-                    total,
-                    _mesFacturado,
-                    direccion,
-                    (SELECT TOP 1 ciudad FROM Global.Cat_Empresa) AS ciudad
-                FROM [Padron].[vw_Cat_Padron]";
+                SELECT vp.id_padron,
+                    vp.id_cuenta,
+                    vp.razon_social,
+                    vp._localizacion,
+                    vp.subtotal,
+                    vp.iva,
+                    vp.total,
+                    vp._mesFacturado,
+                    vp.direccion,
+                    p.id_localidad,
+                    _poblacion
+                FROM Padron.vw_Cat_Padron vp
+                inner join padron.Cat_Padron p on p.id_padron=vp.id_padron";
 
             try {
                 using (SqlConnection connection = new SqlConnection(_connectionString)) {
