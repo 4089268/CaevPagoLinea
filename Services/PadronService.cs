@@ -15,8 +15,12 @@ namespace CAEV.PagoLinea.Services
             this.context = context;
         }
 
-        public CuentaPadron? GetPadron(int idLocalidad, int idCuenta){
-            return context.CuentasPadron.FirstOrDefault( item => item.IdCuenta == idCuenta && item.IdLocalidad == idLocalidad);
+        public CuentaPadron? GetPadron(int idLocalidad, int idCuenta, int sector){
+            return context.CuentasPadron.FirstOrDefault(
+                item => item.IdCuenta == idCuenta &&
+                item.IdLocalidad == idLocalidad &&
+                item.Sector == sector
+            );
         }
 
     }

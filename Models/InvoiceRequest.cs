@@ -10,6 +10,10 @@ namespace CAEV.PagoLinea.Models {
     {
         [Required(ErrorMessage = "El codigo de Localidad es requerido.")]
         public int Localidad { get; set; }
+        
+
+        [Required(ErrorMessage = "El Sector es requerido.")]
+        public int Sector { get; set; }
 
 
         [Required(ErrorMessage = "El numero de cuenta es requerido.")]

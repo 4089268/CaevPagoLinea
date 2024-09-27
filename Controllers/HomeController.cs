@@ -55,7 +55,8 @@ public class HomeController : Controller
                 Subtotal = p.Subtotal,
                 IVA = p.Iva,
                 Total = p.Total,
-                PeriodoFactura = p.MesFacturado
+                PeriodoFactura = p.MesFacturado,
+                Sector = p.Sector
             };
             _logger.LogInformation("Padron '{padron}' added", p.IdPadron);
             this.context.CuentasPadron.Add(newRecord);

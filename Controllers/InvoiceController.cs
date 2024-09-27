@@ -26,7 +26,8 @@ public class InvoiceController : Controller
     {
         return View( new InvoiceRequest(){
             Localidad = 275,
-            Cuenta = 1,
+            Sector = 1,
+            Cuenta = 0,
         });
     }
 
@@ -37,8 +38,10 @@ public class InvoiceController : Controller
             return View("Index");
         }
 
+        Console.WriteLine($"{model.Localidad},{model.Sector}, {model.Cuenta}");
+        
         // * validate if padron exist
-        var padron = this.padronService.GetPadron(model.Localidad, model.Localidad);
+        var padron = this.padronService.GetPadron(model.Localidad, model.Localidad, model.Sector);
         if( padron == null){
             
             ViewBag.ErrorMessage = "No se encontró coincidencias en el sistema";
@@ -47,10 +50,10 @@ public class InvoiceController : Controller
             return View(model);
         }
         
-        
         // Store data in TempData
         TempData["Localidad"] = model.Localidad;
         TempData["Cuenta"] = model.Cuenta;
+        TempData["Sector"] = model.Sector;
 
         // You can access model.Localidad and model.Cuenta
         return RedirectToAction("InvoiceData");
@@ -63,9 +66,10 @@ public class InvoiceController : Controller
         // Retrieve data from TempData
         int? localidad = TempData["Localidad"] as int?;
         int? cuenta = TempData["Cuenta"] as int?;
+        int? sector = TempData["Sector"] as int?;
 
         // * get the padron
-        var padron = this.padronService.GetPadron( localidad!.Value, cuenta!.Value);
+        var padron = this.padronService.GetPadron( localidad!.Value, cuenta!.Value, sector!.Value);
 
         // * mask the name
         padron!.RazonSocial = MaskString.Mask(padron.RazonSocial);
