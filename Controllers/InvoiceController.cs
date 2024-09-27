@@ -2,6 +2,9 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using CAEV.PagoLinea.Models;
 using CAEV.PagoLinea.Services;
+using CAEV.PagoLinea.Data;
+using Microsoft.Extensions.Options;
+using CAEV.PagoLinea.Helpers;
 
 namespace CAEV.PagoLinea.Controllers;
 
@@ -9,11 +12,13 @@ public class InvoiceController : Controller
 {
     private readonly ILogger<InvoiceController> _logger;
     private readonly PadronService padronService;
+    private readonly MultipagoSettings multipagoSettings;
 
-    public InvoiceController(ILogger<InvoiceController> logger, PadronService padronService)
+    public InvoiceController(ILogger<InvoiceController> logger, PadronService padronService, IOptions<MultipagoSettings> options)
     {
         _logger = logger;
         this.padronService = padronService;
+        this.multipagoSettings = options.Value;
     }
 
     [HttpGet]
@@ -76,4 +81,38 @@ public class InvoiceController : Controller
 
         return View(padron);
     }
+
+    [HttpPost]
+    public ActionResult InvoiceData(CuentaPadron padron)
+    {
+
+        // * make the reference number
+        var layouRequest = new LayoutEnvio();
+        layouRequest.Account = this.multipagoSettings.Account;
+        layouRequest.Product = this.multipagoSettings.Product;
+        layouRequest.Node = this.multipagoSettings.Node.ToString();
+        layouRequest.Concept = LayoutEnvioConceptos.PANUCO.ToString();
+        layouRequest.Ammount = padron.Total;
+        layouRequest.Customername = padron.RazonSocial;
+        layouRequest.Currency = LayoutEnvioCurrency.PesosMexicanos;
+        layouRequest.Urlsuccess = "https://caev.gob.mx/caev/confirmar-pago";
+        layouRequest.Urlfailure = "https://caev.gob.mx/caev/confirmar-pago";
+
+        layouRequest.Order = Guid.NewGuid().ToString().Replace("-","");
+        layouRequest.Reference = string.Format("{0}{1}{2}{3}{4}",
+            padron.IdLocalidad.ToString().PadLeft(6,'0'),
+            padron.IdCuenta.ToString().PadLeft(12,'0'),
+            padron.IdPadron.ToString().PadLeft(12,'0'),
+            padron.PeriodoFactura.ToString().ToUpper().Replace(" ","").Trim(),
+            (padron.Total * 100).ToString("no").PadLeft(12,'0')
+        );
+
+        layouRequest.Signature = HashUtils.GetHash(
+            this.multipagoSettings.Key,
+            string.Format("{0}{1}{2}", layouRequest.Order, layouRequest.Reference, layouRequest.Ammount)
+        );
+
+        return View("PreparePayment", layouRequest);
+    }
+
 }

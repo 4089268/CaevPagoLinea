@@ -11,6 +11,7 @@ builder.Services.AddDbContext<PagoLineaContext>(options=>{
 });
 builder.Services.AddScoped<ArquosService>();
 builder.Services.AddScoped<PadronService>();
+builder.Services.Configure<MultipagoSettings>(builder.Configuration.GetSection("MultipagoSettings"));
 
 var app = builder.Build();
 

@@ -1,0 +1,115 @@
+﻿@{
+    ViewData["Title"] = "Pago en Linea";
+}
+
+@model CAEV.PagoLinea.LayoutEnvio
+
+<div class="text-center">
+    <h1 class="display-4">Pago en linea</h1>
+    <p style="max-width: 44rem; margin: 0 auto ;">Ten tu recibo a la mano para realizar tu pago. Por favor, asegúrate de tener los detalles correctos antes de proceder con el pago de tu factura.</p>
+</div>
+
+
+<div class="container mt-4 mb-5 pb-5">
+
+    <div class="stepwizard">
+        <div class="stepwizard-step">
+            <button type="button" class="btn btn-secondary btn-circle" disabled>1</button>
+            <p>Consulta tu saldo</p>
+        </div>
+        <div class="stepwizard-step">
+            <button type="button" class="btn btn-secondary btn-circle" disabled>2</button>
+            <p>Comprueba tus datos</p>
+        </div>
+        <div class="stepwizard-step">
+            <button type="button" class="btn btn-primary btn-circle" disabled>3</button>
+            <p>Realiza tu pago</p>
+        </div>
+    </div>
+    
+    <div class="card datos shadow">
+        <div class="card-header">
+            3.- Realizar pago
+        </div>
+        <div class="card-body">
+            <form method="post" action="https://prepro.adquiracloud.mx/clb/endpoint/caev">
+                <div class="mb-3">
+                    <label for="localidad" class="form-label">Account</label>
+                    @Html.TextBoxFor(model => model.Account, new { @class = "form-control", @disabled="true", @name="mp_account" })
+                </div>
+                <div class="mb-3">
+                    <label for="localidad" class="form-label">Num Orden</label>
+                    @Html.TextBoxFor(model => model.Order, new { @class = "form-control", @disabled="true", @name="mp_order" })
+                </div>
+
+                <div class="mb-3">
+                    <label for="localidad" class="form-label">Referencia</label>
+                    @Html.TextBoxFor(model => model.Reference, new { @class = "form-control", @disabled="true", @name="mp_reference" })
+                </div>
+                <div class="mb-3">
+                    <label for="localidad" class="form-label">Producto ID</label>
+                    @Html.TextBoxFor(model => model.Product, new { @class = "form-control", @disabled="true", @name="mp_product"})
+                </div>
+                <div class="mb-3">
+                    <label for="localidad" class="form-label">Node ID</label>
+                    @Html.TextBoxFor(model => model.Node, new { @class = "form-control", @disabled="true", @name="mp_node"})
+                </div>
+                <div class="mb-3">
+                    <label for="localidad" class="form-label">Concepto ID</label>
+                    @Html.TextBoxFor(model => model.Concept, new { @class = "form-control", @disabled="true", @name="mp_concept"})
+                </div>
+                <div class="mb-3">
+                    <label for="localidad" class="form-label">Total</label>
+                    @Html.TextBoxFor(model => model.Ammount, new { @class = "form-control", @disabled="true", @name="mp_ammount" })
+                </div>
+                <div class="mb-3">
+                    <label for="localidad" class="form-label">Currency ID</label>
+                    @Html.TextBoxFor(model => model.Currency, new { @class = "form-control", @disabled="true", @name="mp_currency" })
+                </div>
+                <div class="mb-3">
+                    <label for="localidad" class="form-label">Usuario</label>
+                    @Html.TextBoxFor(model => model.Customername, new { @class = "form-control", @disabled="true", @name="mp_customername" })
+                </div>
+                <div class="mb-3">
+                    <label for="localidad" class="form-label">Url Retorno</label>
+                    @Html.TextBoxFor(model => model.Urlsuccess, new { @class = "form-control", @disabled="true", @name="mp_urlsuccess" })
+                </div>
+                <div class="mb-3">
+                    <label for="localidad" class="form-label">Firma Digital</label>
+                    @Html.TextBoxFor(model => model.Signature, new { @class = "form-control", @disabled="true", @name="mp_signature", @multiline="true" })
+                </div>
+
+                <div class="d-flex justify-content-center">
+                    <input type="submit" class="btn btn-primary btn-lg btn-success" value="Realizar Pago" />
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+
+<style>
+    .stepwizard {
+    display: flex;
+    justify-content: space-between;
+}
+.stepwizard .btn {
+    margin: 0 5px;
+}
+.stepwizard-step {
+    flex: 1;
+    text-align: center;
+}
+.stepwizard-step .btn-circle {
+    width: 40px;
+    height: 40px;
+    line-height: 40px;
+    border-radius: 50%;
+}
+
+.card.datos{
+    max-width: 32rem;
+    margin: 1rem auto;
+}
+</style>

@@ -32,7 +32,7 @@
             2.- Comprueba tus datos
         </div>
         <div class="card-body">
-            @using (Html.BeginForm("Index", "Invoice", FormMethod.Post)){
+            @using (Html.BeginForm("InvoiceData", "Invoice", FormMethod.Post)){
                 <div class="mb-3">
                     <label for="localidad" class="form-label">Localidad</label>
                     @Html.TextBoxFor(model => model.Localidad, new { @class = "form-control", @disabled="true" })
@@ -60,7 +60,7 @@
                 </div>
 
                 <div class="d-flex justify-content-center">
-                    <input class="btn btn-primary btn-lg btn-success" value="Realizar Pago" disabled />
+                    <input type="submit" class="btn btn-primary btn-lg btn-success" value="Confirmar Datos" />
                 </div>
             }
         </div>
