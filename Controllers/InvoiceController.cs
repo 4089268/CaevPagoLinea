@@ -61,6 +61,9 @@ public class InvoiceController : Controller
 
         // * get the padron
         var padron = this.padronService.GetPadron( localidad!.Value, cuenta!.Value);
+
+        // * mask the name
+        padron!.RazonSocial = MaskString.Mask(padron.RazonSocial);
         
         // Check if data exists
         if (localidad.HasValue && cuenta.HasValue) {
