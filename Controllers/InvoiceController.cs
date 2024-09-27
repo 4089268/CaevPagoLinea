@@ -41,7 +41,7 @@ public class InvoiceController : Controller
         Console.WriteLine($"{model.Localidad},{model.Sector}, {model.Cuenta}");
         
         // * validate if padron exist
-        var padron = this.padronService.GetPadron(model.Localidad, model.Localidad, model.Sector);
+        var padron = this.padronService.GetPadron(model.Localidad, model.Cuenta, model.Sector);
         if( padron == null){
             
             ViewBag.ErrorMessage = "No se encontró coincidencias en el sistema";
@@ -70,9 +70,11 @@ public class InvoiceController : Controller
 
         // * get the padron
         var padron = this.padronService.GetPadron( localidad!.Value, cuenta!.Value, sector!.Value);
+        if( padron != null){
+            // * mask the name
+            padron!.RazonSocial = MaskString.Mask(padron.RazonSocial);
+        }
 
-        // * mask the name
-        padron!.RazonSocial = MaskString.Mask(padron.RazonSocial);
         
         // Check if data exists
         if (localidad.HasValue && cuenta.HasValue) {

@@ -20,22 +20,18 @@ namespace CAEV.PagoLinea.Services
             List<PadronRecord> records = new();
 
             string query = @"
-
-            SELECT vp.id_padron,
-                vp.id_cuenta,
-                vp.razon_social,
-                vp._localizacion,
-                isnull(vp.subtotal,0) as subtotal,
-                isnull(vp.iva,0) as iva,
-                isnull(vp.total,0) as total,
-                vp._mesFacturado,
-                vp.direccion,
-                p.id_localidad,
-                isnull(p.sector,0) as sector,
-                vp._poblacion
-            FROM Padron.vw_Cat_Padron vp
-             Inner join padron.Cat_Padron p on p.id_padron=vp.id_padron
-             Where isnull(vp.id_padron,0)>0 and isnull(vp.id_cuenta,0)>0";
+            SELECT vp.id_padron, vp.id_cuenta,
+    vp.razon_social,                     vp._localizacion,
+    isnull(vp.subtotal,0) as subtotal,                     isnull(vp.iva,0) as iva,
+ iif(r.valor=1,t.redondeado,isnull(vp.total,0)) as total, vp._mesFacturado,
+ vp.direccion,      p.id_localidad, 
+ isnull(p.sector,0) as sector, vp._poblacion                
+FROM Padron.vw_Cat_Padron vp     Inner Join padron.Cat_Padron p on p.id_padron=vp.id_padron
+  Outer Apply   (
+  Select * From Global.uif_Redondear(isnull(vp.total,0))  ) as t
+  Outer Apply   (
+  select isnull(valor,0) as valor from global.cfg_parametros where parametro='REDONDEAR'  ) as r
+Where isnull(vp.id_padron,0)>0 and isnull(vp.id_cuenta,0)>0";
 
             try {
                 using (SqlConnection connection = new SqlConnection(_connectionString)) {

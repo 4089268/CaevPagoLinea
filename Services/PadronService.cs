@@ -16,11 +16,14 @@ namespace CAEV.PagoLinea.Services
         }
 
         public CuentaPadron? GetPadron(int idLocalidad, int idCuenta, int sector){
-            return context.CuentasPadron.FirstOrDefault(
-                item => item.IdCuenta == idCuenta &&
-                item.IdLocalidad == idLocalidad &&
-                item.Sector == sector
-            );
+            
+            return context.CuentasPadron
+                .Where( item => item.IdLocalidad == idLocalidad)
+                .Where( item => item.IdCuenta == idCuenta)
+                .Where( item => item.Sector == sector)
+                .FirstOrDefault();
+            
+
         }
 
     }
