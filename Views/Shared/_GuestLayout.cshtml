@@ -1,0 +1,64 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - CAEV.PagoLinea</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/CAEV.PagoLinea.styles.css" asp-append-version="true" />
+    <style>
+        .stepwizard {
+            display: flex;
+            justify-content: space-between;
+        }
+        .stepwizard .btn {
+            margin: 0 5px;
+        }
+        .stepwizard-step {
+            flex: 1;
+            text-align: center;
+        }
+        .stepwizard-step .btn-circle {
+            width: 40px;
+            height: 40px;
+            line-height: 40px;
+            border-radius: 50%;
+        }
+        .card.datos{
+            max-width: 32rem;
+            margin: 1rem auto;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white mb-3">
+            <div class="container d-flex align-items-center justify-content-center">
+                <img src="/img/caev-logo.png" height="80" width="80" alt="Logo Caev" />
+                <img src="/img/banner-pagos.jpg" height="220" width="auto"/>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container">
+        <main role="main" style="padding-bottom: 5rem;">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container text-center">
+            <a class="mx-auto d-block" href="http://caev.gob.mx/" target="_blank">
+                <img src="/img/caev-banner.png" alt="caev-banner" height="50" />
+            </a>
+            &copy; 2024 - CAEV Pago en Linea
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,3 +1,5 @@
+using System;
+using System.Collections;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using CAEV.PagoLinea.Models;
@@ -22,24 +24,21 @@ public class InvoiceController : Controller
     }
 
     [HttpGet]
-    public ActionResult Index()
-    {
+    [Route("/")]
+    public ActionResult Index() {
         return View( new InvoiceRequest(){
             Localidad = 275,
-            Sector = 1,
-            Cuenta = 0,
+            Cuenta = 12
         });
     }
 
     [HttpPost]
-    public ActionResult Index(InvoiceRequest model)
-    {
+    [Route("/")]
+    public ActionResult Index(InvoiceRequest model) {
         if (!ModelState.IsValid){
             return View("Index");
         }
 
-        Console.WriteLine($"{model.Localidad},{model.Sector}, {model.Cuenta}");
-        
         // * validate if padron exist
         var padron = this.padronService.GetPadron(model.Localidad, model.Cuenta, model.Sector);
         if( padron == null){
@@ -60,31 +59,36 @@ public class InvoiceController : Controller
 
     }
 
-
-    public ActionResult InvoiceData()
-    {
+    public ActionResult InvoiceData(){
+        
         // Retrieve data from TempData
-        int? localidad = TempData["Localidad"] as int?;
-        int? cuenta = TempData["Cuenta"] as int?;
-        int? sector = TempData["Sector"] as int?;
+        int localidad = 0;
+        int cuenta = 0;
+        int sector = 0;
+
+        try {
+            localidad = Convert.ToInt32(TempData["Localidad"]);
+            cuenta = Convert.ToInt32(TempData["Cuenta"]);
+            sector = Convert.ToInt32(TempData["Sector"]);
+        }
+        catch (System.Exception) {
+            return RedirectToAction("Index");
+        }
+
+        if( localidad == 0 || cuenta == 0 || sector == 0){
+            return RedirectToAction("Index");
+        }
 
         // * get the padron
-        var padron = this.padronService.GetPadron( localidad!.Value, cuenta!.Value, sector!.Value);
+        var padron = this.padronService.GetPadron( localidad, cuenta, sector);
         if( padron != null){
             // * mask the name
             padron!.RazonSocial = MaskString.Mask(padron.RazonSocial);
         }
 
         
-        // Check if data exists
-        if (localidad.HasValue && cuenta.HasValue) {
-            // Use the data as needed
-            ViewBag.Message = $"Localidad: {localidad}, Cuenta: {cuenta}";
-        }
-        else {
-            ViewBag.Message = "No data available.";
-        }
-
+        ViewBag.Message = $"Localidad: {localidad}, Cuenta: {cuenta}";
+        
         return View(padron);
     }
 

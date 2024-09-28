@@ -1,14 +1,16 @@
 ﻿@{
     ViewData["Title"] = "Pago en Linea";
+    Layout = "_GuestLayout";
 }
-
 @model CAEV.PagoLinea.Models.InvoiceRequest
 
-<div class="text-center">
-    <h1 class="display-4">Pago en linea</h1>
-    <p style="max-width: 44rem; margin: 0 auto ;">Ten tu recibo a la mano para realizar tu pago. Por favor, asegúrate de tener los detalles correctos antes de proceder con el pago de tu factura.</p>
+<div class=" container text-center">
+    <h1 class="display-5">Pago en Linea</h1>
 </div>
 
+<div class="container text-center">
+    <p style="max-width: 44rem; margin: 0 auto ;">Ten tu recibo a la mano para realizar tu pago. Por favor, asegúrate de tener los detalles correctos antes de proceder con el pago de tu factura.</p>
+</div>
 
 <div class="container mt-4">
 
@@ -17,10 +19,12 @@
             <button type="button" class="btn btn-primary btn-circle" disabled>1</button>
             <p>Consulta tu saldo</p>
         </div>
+        
         <div class="stepwizard-step">
             <button type="button" class="btn btn-secondary btn-circle" disabled>2</button>
             <p>Comprueba tus datos</p>
         </div>
+
         <div class="stepwizard-step">
             <button type="button" class="btn btn-secondary btn-circle" disabled>3</button>
             <p>Realiza tu pago</p>
@@ -61,29 +65,3 @@
     </div>
 
 </div>
-
-
-<style>
-    .stepwizard {
-    display: flex;
-    justify-content: space-between;
-}
-.stepwizard .btn {
-    margin: 0 5px;
-}
-.stepwizard-step {
-    flex: 1;
-    text-align: center;
-}
-.stepwizard-step .btn-circle {
-    width: 40px;
-    height: 40px;
-    line-height: 40px;
-    border-radius: 50%;
-}
-
-.card.datos{
-    max-width: 32rem;
-    margin: 1rem auto;
-}
-</style>
