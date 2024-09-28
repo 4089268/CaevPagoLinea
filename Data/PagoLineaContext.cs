@@ -10,6 +10,7 @@ namespace CAEV.PagoLinea.Data
         public DbSet<CuentaPadron> CuentasPadron {get;set;} = default!;
         public DbSet<CatOficina> Oficinas {get;set;} = default!;
         public DbSet<CatLocalidad> Localidades {get;set;} = default!;
+        public DbSet<User> Users {get;set;} = default!;
 
         public PagoLineaContext(DbContextOptions options ) : base(options){
             //
@@ -42,6 +43,31 @@ namespace CAEV.PagoLinea.Data
             .HasOne(l => l.Oficina) // CatLocalidad has one Oficina
             .WithMany(o => o.Localidades) // CatOficina has many Localidades (assuming this navigation exists in CatOficina)
             .HasForeignKey(l => l.OficinaId); // The foreign key is OficinaId
+
+
+            // * User entity
+            var userEntity = modelBuilder.Entity<User>();
+            userEntity.Property( p => p.CreatedAt)
+                .HasDefaultValueSql("getDate()")
+                .HasColumnType("datetime");
+            userEntity.Property( p => p.UpdatedAt)
+                .HasDefaultValueSql("getDate()")
+                .HasColumnType("datetime")
+                .ValueGeneratedOnAddOrUpdate();
+
+            
+            // * default user
+            var hashedPassword = BCrypt.Net.BCrypt.HashPassword("password123#");
+
+            // Seed a default user
+            modelBuilder.Entity<User>().HasData( new User
+                {
+                    Id = 1, // Set the ID manually
+                    Name = "Administrador",
+                    Email = "admin@email.com",
+                    Password = hashedPassword
+                }
+            );
 
             base.OnModelCreating(modelBuilder);
             
