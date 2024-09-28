@@ -8,6 +8,8 @@ namespace CAEV.PagoLinea.Data
     public class PagoLineaContext : DbContext {
 
         public DbSet<CuentaPadron> CuentasPadron {get;set;} = default!;
+        public DbSet<CatOficina> Oficinas {get;set;} = default!;
+        public DbSet<CatLocalidad> Localidades {get;set;} = default!;
 
         public PagoLineaContext(DbContextOptions options ) : base(options){
             //
@@ -34,6 +36,12 @@ namespace CAEV.PagoLinea.Data
                 .HasDefaultValueSql("getDate()")
                 .HasColumnType("datetime")
                 .ValueGeneratedOnAddOrUpdate();
+
+            // * CatLocalidad Entity
+            modelBuilder.Entity<CatLocalidad>()
+            .HasOne(l => l.Oficina) // CatLocalidad has one Oficina
+            .WithMany(o => o.Localidades) // CatOficina has many Localidades (assuming this navigation exists in CatOficina)
+            .HasForeignKey(l => l.OficinaId); // The foreign key is OficinaId
 
             base.OnModelCreating(modelBuilder);
             
