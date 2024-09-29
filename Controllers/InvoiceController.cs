@@ -27,8 +27,7 @@ public class InvoiceController : Controller
     [Route("/")]
     public ActionResult Index() {
         return View( new InvoiceRequest(){
-            Localidad = 275,
-            Cuenta = 12
+            Localidad = 275
         });
     }
 
