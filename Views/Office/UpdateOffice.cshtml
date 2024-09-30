@@ -1,0 +1,41 @@
+﻿@{
+    ViewData["Title"] = "Oficinas";
+}
+@model IEnumerable<CAEV.PagoLinea.Models.CatOficina>
+@functions {
+    string GetOfficeName(){
+
+        if(ViewBag.Office == null){
+            return "";
+        }
+
+        return (ViewBag.Office as CatOficina)!.Oficina;
+
+    }
+}
+
+<div class="container">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item" aria-current="page">
+                <a asp-action="Dashboard" asp-controller="Auth">Dashboard</a>
+            </li>
+            <li class="breadcrumb-item" aria-current="page">
+                <a asp-action="Index" asp-controller="Office">Catalogo Oficinas</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">
+                Actualizar
+            </li>
+        </ol>
+    </nav>
+</div>
+
+<div class="container my-1">
+    <h1 class="text-center text-uppercase" style="font-size: 1.75rem;">Actualizando Oficina @GetOfficeName()</h1>
+</div>
+
+@if(ViewBag.Message!=null){
+    <div class="container">
+        <div class="alert @ViewBag.MessageClass" role="alert"> @ViewBag.Message</div>
+    </div>
+}

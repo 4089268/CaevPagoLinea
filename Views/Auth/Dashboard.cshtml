@@ -2,7 +2,16 @@
     ViewData["Title"] = "Dashboard";
 }
 
+<div class="container">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item active" aria-current="page">
+                <a asp-action="Dashboard" asp-controller="Auth">Dashboard</a>
+            </li>
+        </ol>
+    </nav>
+</div>
 
-<div class="container mt-4">
-    <h1 class="display-2"> Usuario Logeado</h1>
+<div class="container my-1">
+    <h1 class="text-center text-uppercase" style="font-size: 1.75rem;">Dashboard</h1>
 </div>

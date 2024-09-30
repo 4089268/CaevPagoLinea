@@ -1,0 +1,64 @@
+﻿@{
+    ViewData["Title"] = "Oficinas";
+}
+@model IEnumerable<CAEV.PagoLinea.Models.CatOficina>
+
+<div class="container">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item" aria-current="page">
+                <a asp-action="Dashboard" asp-controller="Auth">Dashboard</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">
+                Catalogo Oficinas
+            </li>
+        </ol>
+    </nav>
+</div>
+
+<div class="container my-1">
+    <h1 class="text-center text-uppercase" style="font-size: 1.75rem;">Catalogo Oficinas</h1>
+</div>
+
+<div class="container">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Oficina</th>
+                <th>Servidor</th>
+                <th>Base de Datos</th>
+                <th>Usuario</th>
+                <th>Actualizable</th>
+                <th>Ultima Actualizacion</th>
+                <th>Actualizar</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var oficina in Model)
+            {
+                <tr>
+                    <td>@oficina.Id</td>
+                    <td>@oficina.Oficina</td>
+                    <td>@oficina.Servidor</td>
+                    <td>@oficina.BaseDatos</td>
+                    <td>@oficina.Usuario</td>
+                    <td class="text-center">
+                        @if (oficina.Actualizable){
+                            <span class="badge rounded-pill bg-success text-bg-secondary">Si</span>
+                        }
+                        else {
+                            <span class="badge rounded-pill bg-warning text-bg-warning">No</span>
+                        }
+                    </td>
+                    <td class="text-center">
+                        -
+                    </td>
+                    <td>
+                        <a type="button" href="@Url.Action("UpdateOffice", "Office", new { officeId = oficina.Id })" class="btn btn-primary btn-sm rounded">Actualizar</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

@@ -50,6 +50,7 @@ public class AuthController : Controller
 
     [Authorize]
     [HttpGet]
+    [Route("/dashboard")]
     public ActionResult Dashboard(){
         return View();
     }

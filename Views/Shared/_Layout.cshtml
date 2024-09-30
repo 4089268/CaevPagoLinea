@@ -26,13 +26,13 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Auth" asp-action="Dashboard">Dashboard</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="LoadPadron">Cargar Padron</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Office" asp-action="Index">Catalogo Oficinas</a>
                         </li>
 
                         @if (User.Identity.IsAuthenticated) {
                             <li class="nav-item" style="margin-left: auto;">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Auth" asp-action="Dashboard">
-                                    <img src="@User.FindFirst(ClaimTypes.Actor)?.Value" height="30" width="30" />
+                                    <img src="@User.FindFirst(ClaimTypes.Actor)?.Value" heigh\="30" width="30" />
                                     <span> @User.FindFirst(ClaimTypes.Name)?.Value</span>
                                 </a>
                             </li>
@@ -46,7 +46,7 @@
         </nav>
     </header>
     <div class="container">
-        <main role="main" class="pb-3">
+        <main role="main" style="padding-bottom: 6rem;">
             @RenderBody()
         </main>
     </div>
