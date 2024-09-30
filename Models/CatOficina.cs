@@ -30,7 +30,7 @@ namespace CAEV.PagoLinea.Models
                 UserID = this.Usuario,
                 Password = this.Contraseña,
                 ConnectTimeout = 900,
-                ApplicationName = "PagoLinea",
+                ApplicationName = "SICEM_CAEV",
                 TrustServerCertificate = true,
                 Encrypt = true
             };
