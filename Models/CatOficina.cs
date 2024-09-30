@@ -23,6 +23,19 @@ namespace CAEV.PagoLinea.Models
 
         public ICollection<CatLocalidad> Localidades { get; set; } = new List<CatLocalidad>();
 
+        public string GetConnectionString(){
+            var _connectionBuilder = new System.Data.SqlClient.SqlConnectionStringBuilder() {
+                DataSource = this.Servidor,
+                InitialCatalog = this.BaseDatos,
+                UserID = this.Usuario,
+                Password = this.Contraseña,
+                ConnectTimeout = 900,
+                ApplicationName = "PagoLinea",
+                TrustServerCertificate = true,
+                Encrypt = true
+            };
+            return _connectionBuilder.ConnectionString;
+        }
     }
 
 }

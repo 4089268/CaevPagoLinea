@@ -52,7 +52,7 @@
                         }
                     </td>
                     <td class="text-center">
-                        -
+                        @( oficina.UltimaActualizacion == null ?"--" : oficina.UltimaActualizacion.Value.ToUniversalTime() )
                     </td>
                     <td>
                         <a type="button" href="@Url.Action("UpdateOffice", "Office", new { officeId = oficina.Id })" class="btn btn-primary btn-sm rounded">Actualizar</a>

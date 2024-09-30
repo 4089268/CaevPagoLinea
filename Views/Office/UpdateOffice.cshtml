@@ -39,3 +39,17 @@
         <div class="alert @ViewBag.MessageClass" role="alert"> @ViewBag.Message</div>
     </div>
 }
+<div class="container d-flex justify-content-center">
+
+    <div class="d-flex flex-column">
+        <label class="form-control mt-2">Cuentas Eliminadas</label>
+        <label class="form-control fw-medium">@ViewBag.DeletedRecords</label>
+
+        <label class="form-control mt-2">Cuentas Agregadas</label>
+        <label class="form-control fw-medium">@ViewBag.NewRecords</label>
+
+        <label class="form-control mt-2">Tiempo transcurrido (segundos)</label>
+        <label class="form-control fw-medium">@ViewBag.ExecutionTimes</label>
+    </div>
+
+</div>

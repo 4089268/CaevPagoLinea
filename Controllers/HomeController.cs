@@ -29,35 +29,4 @@ public class HomeController : Controller
     }
 
 
-    // TODO: move this to a his own controller
-    public ActionResult LoadPadron(){
-
-        var padron = this.arquosService.GetPadron();
-
-        this.context.CuentasPadron.ExecuteDelete();
-        this.context.SaveChanges();
-        
-        foreach( var p in padron){
-            var newRecord = new CuentaPadron(){
-                IdLocalidad = p.IdLocalidad,
-                Localidad = p.Localidad,
-                IdPadron = p.IdPadron,
-                IdCuenta = p.IdCuenta,
-                RazonSocial = p.RazonSocial,
-                Localizacion = p.Localizacion??"",
-                Subtotal = p.Subtotal,
-                IVA = p.Iva,
-                Total = p.Total,
-                PeriodoFactura = p.MesFacturado,
-                Sector = p.Sector
-            };
-            _logger.LogInformation("Padron '{padron}' added", p.IdPadron);
-            this.context.CuentasPadron.Add(newRecord);
-        }
-
-        ViewBag.Total = this.context.SaveChanges();
-        
-        return View();
-    }
-
 }

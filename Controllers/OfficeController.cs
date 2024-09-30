@@ -1,12 +1,14 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 using CAEV.PagoLinea.Models;
 using CAEV.PagoLinea.Services;
 using CAEV.PagoLinea.Data;
 using CAEV.PagoLinea.Helpers;
-using Microsoft.AspNetCore.Authorization;
 
 namespace CAEV.PagoLinea.Controllers;
 
@@ -33,7 +35,7 @@ public class OfficeController : Controller
 
     [HttpGet]
     [Route("updateOffice/{officeId:int}")]
-    public ActionResult UpdateOffice(int officeId){
+    public async Task<ActionResult> UpdateOffice(int officeId){
         
         // * retrive the office
         var office = this.pagoLineaContext.Oficinas.FirstOrDefault(item => item.Id == officeId);
@@ -52,8 +54,90 @@ public class OfficeController : Controller
             return View();
         }
 
-        return View();
+        // update the office
+        try {
+
+            var results = await UpdatePadronOffice(office);
+
+            ViewBag.Message = "Oficina actualizada";
+            ViewBag.MessageClass = "alert-success";
+            ViewBag.DeletedRecords = results.DeletedRecords;
+            ViewBag.NewRecords = results.NewRecords;
+            ViewBag.ExecutionTimes = (results.ExecutionTimes / 1000);
+            return View();
+        }
+        catch (System.Exception err) {
+            ViewBag.Message = "Error al actualizar la oficina: " + err.Message ;
+            ViewBag.MessageClass = "alert-danger";
+            return View();
+        }
+
     }
+
+
+    #region Private functions
+
+    private async Task<dynamic> UpdatePadronOffice(CatOficina oficina){
+        using var transaction = await this.pagoLineaContext.Database.BeginTransactionAsync();
+        try {
+
+            var stopwatch = Stopwatch.StartNew();
+
+            var arquosService = new ArquosService(oficina.GetConnectionString());
+
+            // * get the new padron
+            var padron = await Task.Run<ICollection<PadronRecord>>( () => arquosService.GetPadron() );
+            
+            // * get the localidaded of the office
+            var localidades = this.pagoLineaContext.Localidades.Where( item => item.OficinaId == oficina.Id).ToList();
+
+            // * delete the old records
+            int[] _locadlidadesIds = localidades.Select(item => item.Id).ToArray<int>();
+            var DeletedRecords = await this.pagoLineaContext.CuentasPadron.Where( item => _locadlidadesIds.Contains(item.Id)).ExecuteDeleteAsync();
+            
+            // * fill the database with the new records
+            foreach( var p in padron){
+                var newRecord = new CuentaPadron(){
+                    IdLocalidad = p.IdLocalidad,
+                    Localidad = p.Localidad,
+                    IdPadron = p.IdPadron,
+                    IdCuenta = p.IdCuenta,
+                    RazonSocial = p.RazonSocial,
+                    Localizacion = p.Localizacion??"",
+                    Subtotal = p.Subtotal,
+                    IVA = p.Iva,
+                    Total = p.Total,
+                    PeriodoFactura = p.MesFacturado,
+                    Sector = p.Sector
+                };
+                _logger.LogInformation("Padron Id '{padron}' added!", p.IdPadron);
+                this.pagoLineaContext.CuentasPadron.Add(newRecord);
+            }
+
+            var NewRecords = padron.Count;
+
+            // * save last update
+            oficina.UltimaActualizacion = DateTime.Now;
+            pagoLineaContext.Oficinas.Update(oficina);
+
+            await this.pagoLineaContext.SaveChangesAsync();
+            await transaction.CommitAsync();
+
+            stopwatch.Stop();
+
+            return new {
+                DeletedRecords,
+                NewRecords,
+                ExecutionTimes = stopwatch.ElapsedMilliseconds
+            };
+        }
+        catch (Exception ex) {
+            _logger.LogError(ex, "Error updating the padron office");
+            await transaction.RollbackAsync();
+            throw;
+        }
+    }
+    #endregion
 
 
 }
