@@ -42,6 +42,12 @@ public class AuthController : Controller
 
     }
 
+    public async Task<ActionResult> Logout() {
+        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        return RedirectToAction("Login");
+    }
+
+
     [Authorize]
     [HttpGet]
     public ActionResult Dashboard(){
@@ -64,9 +70,10 @@ public class AuthController : Controller
 
     private async Task LogInUser(User user){
         var claims = new List<Claim> {
-            new(ClaimTypes.Name, user.Email!),
-            new("FullName", user.Name!),
+            new(ClaimTypes.Email, user.Email!),
+            new(ClaimTypes.Name, user.Name!),
             new(ClaimTypes.Role, "Administrator"),
+            new(ClaimTypes.Actor, $"https://ui-avatars.com/api/?name={user.Name!.Replace(" ", "+")}&color=333&rounded=true"),
         };
 
         var claimsIdentity = new ClaimsIdentity(

@@ -18,7 +18,7 @@ builder.Services.Configure<MultipagoSettings>(builder.Configuration.GetSection("
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
-        options.ExpireTimeSpan = TimeSpan.FromMinutes(20);
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(15);
         options.SlidingExpiration = true;
         options.AccessDeniedPath = "/";
         options.LoginPath = "/Auth/Login";
