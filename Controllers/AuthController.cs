@@ -5,12 +5,13 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
+using AspNetCore.ReCaptcha;
 using CAEV.PagoLinea.Models;
 using CAEV.PagoLinea.Services;
 using CAEV.PagoLinea.Data;
 using CAEV.PagoLinea.Helpers;
-using Microsoft.AspNetCore.Authorization;
 
 namespace CAEV.PagoLinea.Controllers;
 
@@ -26,13 +27,18 @@ public class AuthController : Controller
 
     [HttpGet]
     public ActionResult Login(){
-        return View();
+        return View(new LoginRequest());
     }
 
+    [ValidateReCaptcha]
     [HttpPost]
-    public async Task<ActionResult> Login(string username, string password) {
+    public async Task<ActionResult> Login(LoginRequest request) {
+
+        if (!ModelState.IsValid){
+            return View(request);
+        }
         
-        var user = IsValidUser(username, password);
+        var user = IsValidUser(request.Usuario!, request.Password!);
         if(user == null){
             ViewBag.Message = "Invalid credentials";
             return View();

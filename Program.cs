@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using AspNetCore.ReCaptcha;
 using CAEV.PagoLinea.Data;
 using CAEV.PagoLinea.Services;
 
@@ -13,7 +14,7 @@ builder.Services.AddDbContext<PagoLineaContext>(options=>{
 });
 builder.Services.AddScoped<PadronService>();
 builder.Services.Configure<MultipagoSettings>(builder.Configuration.GetSection("MultipagoSettings"));
-
+builder.Services.AddReCaptcha(builder.Configuration.GetSection("ReCaptcha"));
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {

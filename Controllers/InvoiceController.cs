@@ -7,6 +7,7 @@ using CAEV.PagoLinea.Services;
 using CAEV.PagoLinea.Data;
 using Microsoft.Extensions.Options;
 using CAEV.PagoLinea.Helpers;
+using AspNetCore.ReCaptcha;
 
 namespace CAEV.PagoLinea.Controllers;
 
@@ -31,6 +32,7 @@ public class InvoiceController : Controller
         });
     }
 
+    [ValidateReCaptcha]
     [HttpPost]
     [Route("/")]
     public ActionResult Index(InvoiceRequest model) {

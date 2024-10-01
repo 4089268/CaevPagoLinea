@@ -1,8 +1,9 @@
-﻿@{
+﻿@using AspNetCore.ReCaptcha
+@model CAEV.PagoLinea.Models.InvoiceRequest
+@{
     ViewData["Title"] = "Pago en Linea";
     Layout = "_GuestLayout";
 }
-@model CAEV.PagoLinea.Models.InvoiceRequest
 
 
 <div class="container text-center">
@@ -54,8 +55,10 @@
                     @Html.TextBoxFor(model => model.Sector, new { @class = "form-control", @placeholder = "000", @id="sector" })
                     @Html.ValidationMessageFor(model => model.Sector)
                 </div>
-
-                <div class="g-recaptcha d-flex justify-content-center p-2" data-sitekey="6LdaMlMqAAAAAIUfmO_JPk4AT0IiDlcz7etl6mBp"></div>
+                
+                <div class="form-group my-1 py-1 d-flex justify-content-center">
+                    @Html.ReCaptcha()
+                </div>
 
                 <div class="d-flex justify-content-center">
                     <input class="btn btn-primary btn-lg btn-success" type="submit" value="Consultar Cuenta" />
