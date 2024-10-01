@@ -35,7 +35,7 @@ namespace CAEV.PagoLinea.Services
                  Select * From Global.uif_Redondear(isnull(vp.total,0))  ) as t
                 Outer Apply   (
                  select isnull(valor,0) as valor from global.cfg_parametros where parametro='REDONDEAR'  ) as r
-                Where isnull(vp.id_padron,0)>0 and isnull(vp.id_cuenta,0)>0";
+                Where isnull(vp.id_padron,0)>0 and isnull(vp.id_cuenta,0)>0 and IsNull(p.id_localidad,0) > 0";
 
             try {
                 using (SqlConnection connection = new SqlConnection(_connectionString)) {

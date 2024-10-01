@@ -27,9 +27,7 @@ public class InvoiceController : Controller
     [HttpGet]
     [Route("/")]
     public ActionResult Index() {
-        return View( new InvoiceRequest(){
-            Localidad = 275
-        });
+        return View( new InvoiceRequest());
     }
 
     [ValidateReCaptcha]
