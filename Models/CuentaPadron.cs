@@ -34,7 +34,15 @@ namespace CAEV.PagoLinea.Models
         public string TotalFormated {
             get => Total.ToString("c2", new CultureInfo("es-MX"));
         }
-    
+
+        public override string ToString() {
+            return $"CuentaPadron: Id={Id}, IdLocalidad={IdLocalidad}, Localidad={Localidad}, " +
+                $"IdPadron={IdPadron}, IdCuenta={IdCuenta}, RazonSocial={RazonSocial}, " +
+                $"Localizacion={Localizacion}, Subtotal={Subtotal.ToString("C2", new CultureInfo("es-MX"))}, " +
+                $"IVA={IVA.ToString("C2", new CultureInfo("es-MX"))}, Total={TotalFormated}, " +
+                $"PeriodoFactura={PeriodoFactura}, CreatedAt={CreatedAt}, UpdatedAt={UpdatedAt}, Sector={Sector}";
+        }
+
     }
 
 }

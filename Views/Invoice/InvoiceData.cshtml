@@ -1,9 +1,8 @@
-﻿@{
+﻿@model CAEV.PagoLinea.Models.CuentaPadron
+@{
     ViewData["Title"] = "Pago en Linea";
     Layout = "_GuestLayout";
 }
-
-@model CAEV.PagoLinea.Models.CuentaPadron
 
 <div class="text-center">
     <p style="max-width: 44rem; margin: 0 auto ;">Ten tu recibo a la mano para realizar tu pago. Por favor, asegúrate de tener los detalles correctos antes de proceder con el pago de tu recibo.</p>
@@ -33,6 +32,9 @@
         </div>
         <div class="card-body">
             @using (Html.BeginForm("InvoiceData", "Invoice", FormMethod.Post)){
+
+                @Html.HiddenFor(m => m.Id)
+
                 <div class="mb-3">
                     <label for="localidad" class="form-label">Localidad</label>
                     @Html.TextBoxFor(model => model.Localidad, new { @class = "form-control", @disabled="true" })
@@ -59,7 +61,11 @@
                     @Html.TextBoxFor(model => model.UpdatedAt, new { @class = "form-control", @disabled="true" })
                 </div>
 
-                <div class="d-flex justify-content-center">
+                <div class="d-flex justify-content-around">
+                    <a asp-action="index" asp-controller="Invoice" class="btn btn-lg btn-secondary text-white">
+                        Consultar otra cuenta
+                    </a>
+
                     <input type="submit" class="btn btn-primary btn-lg btn-success" value="Confirmar Datos" />
                 </div>
             }

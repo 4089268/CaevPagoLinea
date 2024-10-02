@@ -85,41 +85,34 @@ public class InvoiceController : Controller
             padron!.RazonSocial = MaskString.Mask(padron.RazonSocial);
         }
 
-        
-        ViewBag.Message = $"Localidad: {localidad}, Cuenta: {cuenta}";
-        
         return View(padron);
     }
 
     [HttpPost]
-    public ActionResult InvoiceData(CuentaPadron padron)
-    {
+    public ActionResult InvoiceData(CuentaPadron padron) {
 
-        // * make the reference number
+        // * retrive the padron Id
+        var _padron = this.padronService.GetPadron(padron.Id);
+        
+        // * prepare the form for the payment
         var layouRequest = new LayoutEnvio();
         layouRequest.Account = this.multipagoSettings.Account;
         layouRequest.Product = this.multipagoSettings.Product;
         layouRequest.Node = this.multipagoSettings.Node.ToString();
         layouRequest.Concept = LayoutEnvioConceptos.PANUCO.ToString();
-        layouRequest.Ammount = padron.Total;
-        layouRequest.Customername = padron.RazonSocial;
+        layouRequest.Ammount = _padron.Total;
+        layouRequest.Customername = _padron.RazonSocial;
         layouRequest.Currency = LayoutEnvioCurrency.PesosMexicanos;
         layouRequest.Urlsuccess = "https://caev.gob.mx/caev/confirmar-pago";
         layouRequest.Urlfailure = "https://caev.gob.mx/caev/confirmar-pago";
-
         layouRequest.Order = Guid.NewGuid().ToString().Replace("-","");
-        layouRequest.Reference = string.Format("{0}{1}{2}{3}{4}",
-            padron.IdLocalidad.ToString().PadLeft(6,'0'),
-            padron.IdCuenta.ToString().PadLeft(12,'0'),
-            padron.IdPadron.ToString().PadLeft(12,'0'),
-            padron.PeriodoFactura.ToString().ToUpper().Replace(" ","").Trim(),
-            (padron.Total * 100).ToString("no").PadLeft(12,'0')
-        );
-
+        layouRequest.Reference = ReferenceFactory.Generate(_padron);
         layouRequest.Signature = HashUtils.GetHash(
             this.multipagoSettings.Key,
             string.Format("{0}{1}{2}", layouRequest.Order, layouRequest.Reference, layouRequest.Ammount)
         );
+
+        // TODO: save a record on the local db of the paymet latout
 
         return View("PreparePayment", layouRequest);
     }
