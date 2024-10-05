@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace CAEV.PagoLinea {
     public class LayoutEnvio {
@@ -16,6 +17,10 @@ namespace CAEV.PagoLinea {
         public string Signature {get;set;} = default!;
         public string Urlsuccess {get;set;} = default!;
         public string Urlfailure {get;set;} = default!;
+
+        public string AmmountString {
+            get => Ammount.ToString("F2", new CultureInfo("es-MX"));
+        }
 
     }
     

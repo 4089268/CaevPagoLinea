@@ -16,12 +16,14 @@ public class InvoiceController : Controller
     private readonly ILogger<InvoiceController> _logger;
     private readonly PadronService padronService;
     private readonly MultipagoSettings multipagoSettings;
+    private readonly PagoLineaContext pagoLineaContext;
 
-    public InvoiceController(ILogger<InvoiceController> logger, PadronService padronService, IOptions<MultipagoSettings> options)
+    public InvoiceController(ILogger<InvoiceController> logger, PadronService padronService, IOptions<MultipagoSettings> options, PagoLineaContext pagoLineaContext)
     {
         _logger = logger;
         this.padronService = padronService;
         this.multipagoSettings = options.Value;
+        this.pagoLineaContext = pagoLineaContext;
     }
 
     [HttpGet]
@@ -94,31 +96,34 @@ public class InvoiceController : Controller
     [HttpPost]
     public ActionResult InvoiceData(CuentaPadron padron)
     {
+        
+        // * reload the data
+        this.pagoLineaContext.Entry(padron).Reload();
 
-        // * make the reference number
-        var layouRequest = new LayoutEnvio();
-        layouRequest.Account = this.multipagoSettings.Account;
-        layouRequest.Product = this.multipagoSettings.Product;
-        layouRequest.Node = this.multipagoSettings.Node.ToString();
-        layouRequest.Concept = LayoutEnvioConceptos.PANUCO.ToString();
-        layouRequest.Ammount = padron.Total;
-        layouRequest.Customername = padron.RazonSocial;
-        layouRequest.Currency = LayoutEnvioCurrency.PesosMexicanos;
-        layouRequest.Urlsuccess = "https://caev.gob.mx/caev/confirmar-pago";
-        layouRequest.Urlfailure = "https://caev.gob.mx/caev/confirmar-pago";
+        // * make order number and save into the dbcontext
 
-        layouRequest.Order = Guid.NewGuid().ToString().Replace("-","");
-        layouRequest.Reference = string.Format("{0}{1}{2}{3}{4}",
-            padron.IdLocalidad.ToString().PadLeft(6,'0'),
-            padron.IdCuenta.ToString().PadLeft(12,'0'),
-            padron.IdPadron.ToString().PadLeft(12,'0'),
-            padron.PeriodoFactura.ToString().ToUpper().Replace(" ","").Trim(),
-            (padron.Total * 100).ToString("no").PadLeft(12,'0')
-        );
-
-        layouRequest.Signature = HashUtils.GetHash(
-            this.multipagoSettings.Key,
-            string.Format("{0}{1}{2}", layouRequest.Order, layouRequest.Reference, layouRequest.Ammount)
+        var orderID = new string(Guid.NewGuid().ToString().Replace("-","").Take(30).ToArray());
+        
+        // * prepare the paylod for sending to the payment sevice
+        var layouRequest = new LayoutEnvio
+        {
+            Account = this.multipagoSettings.Account,
+            Product = this.multipagoSettings.Product,
+            Node = this.multipagoSettings.Node.ToString(),
+            Concept = LayoutEnvioConceptos.PANUCO.ToString(),
+            Ammount = padron.Total,
+            Customername = padron.RazonSocial,
+            Currency = LayoutEnvioCurrency.PesosMexicanos,
+            Urlsuccess = "https://caev.gob.mx/caev/confirmar-pago?status=1",
+            Urlfailure = "https://caev.gob.mx/caev/confirmar-pago?status=0",
+            Order = orderID.ToString(),
+            Reference = ReferenceMaker.GetReference(padron)
+        };
+        
+        // * make the signature 
+        layouRequest.Signature = HashUtils.GetHash2(
+            string.Format("{0}{1}{2}", layouRequest.Order, layouRequest.Reference, layouRequest.AmmountString),
+            this.multipagoSettings.Key
         );
 
         return View("PreparePayment", layouRequest);

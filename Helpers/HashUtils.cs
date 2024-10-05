@@ -23,5 +23,23 @@ namespace CAEV.PagoLinea.Helpers
            return hashed;
         }
 
+        public static string GetHash2( string data, string key )
+        {
+            // Convert the key and message to byte arrays
+            var keyBytes = Encoding.UTF8.GetBytes(key);
+            var messageBytes = Encoding.UTF8.GetBytes(data);
+            
+            // Create an HMACSHA256 instance with the key
+            using (var hmacsha256 = new HMACSHA256(keyBytes))
+            {
+                // Compute the hash
+                var hashBytes = hmacsha256.ComputeHash(messageBytes);
+                
+                // Convert the hash to a hexadecimal string
+                var hashHex = BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
+                return hashHex;
+            }
+        }
+
     }
 }
