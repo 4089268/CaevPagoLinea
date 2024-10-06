@@ -3,7 +3,7 @@
     Layout = "_GuestLayout";
 }
 
-@model CAEV.PagoLinea.LayoutEnvio
+@model CAEV.PagoLinea.LayoutEnvio?
 
 <div class="text-center">
     <p style="max-width: 44rem; margin: 0 auto ;">Ten tu recibo a la mano para realizar tu pago. Por favor, asegúrate de tener los detalles correctos antes de proceder con el pago de tu recibo.</p>
@@ -31,6 +31,8 @@
         <div class="card-header">
             3.- Realizar pago
         </div>
+
+        @if(Model != null){
         <div class="card-body">
             <form id="form" name="form" method="POST" action="https://prepro.adquiracloud.mx/multipagos/portal/v2/payment">
                 <input type="hidden" name="mp_product" value="@Model.Product" />
@@ -46,18 +48,36 @@
                 <input type="hidden" name="mp_urlsuccess" value="@Model.Urlsuccess" />
                 <input type="hidden" name="mp_urlfailure" value="@Model.Urlfailure" />
             </form>
-            <div>Procesando solicitud</div>
+            <div class="d-flex flex-column align-items-center justify-content-around">
+                <div>Procesando solicitud</div>
+
+                <div class="spinner-border my-2" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
         </div>
+        }else{
+            <div class="card-body">
+                <div class="alert alert-danger" role="alert">
+                    @ViewBag.ErrorMessage
+                </div>
+                <div class="d-flex justify-content-center">
+                    <a class="btn btn-secondary mx-auto" asp-action="Index">Continuar</a>
+                </div>
+            </div>
+        }
     </div>
 
 </div>
 
-<script>
-    var tid = setInterval( function () {
-        if ( document.readyState !== 'complete' ) return;
-        clearInterval( tid ); 
-        // do your work    
-        document.form.submit();
-    }, 100 );
-
-</script>
+@section scripts {
+    @if( Model != null){
+        <script>
+            var tid = setInterval( function () {
+                if ( document.readyState !== 'complete' ) return;
+                clearInterval( tid );
+                document.form.submit();
+            }, 500 );
+        </script>
+    }
+}

@@ -15,15 +15,14 @@ public class InvoiceController : Controller
 {
     private readonly ILogger<InvoiceController> _logger;
     private readonly PadronService padronService;
-    private readonly MultipagoSettings multipagoSettings;
     private readonly PagoLineaContext pagoLineaContext;
+    private readonly InvoiceService invoiceService;
 
-    public InvoiceController(ILogger<InvoiceController> logger, PadronService padronService, IOptions<MultipagoSettings> options, PagoLineaContext pagoLineaContext)
-    {
+    public InvoiceController(ILogger<InvoiceController> logger, PadronService padronService, PagoLineaContext pagoLineaContext, InvoiceService invoiceService ) {
         _logger = logger;
         this.padronService = padronService;
-        this.multipagoSettings = options.Value;
         this.pagoLineaContext = pagoLineaContext;
+        this.invoiceService = invoiceService;
     }
 
     [HttpGet]
@@ -100,33 +99,15 @@ public class InvoiceController : Controller
         // * reload the data
         this.pagoLineaContext.Entry(padron).Reload();
 
-        // * make order number and save into the dbcontext
-
-        var orderID = new string(Guid.NewGuid().ToString().Replace("-","").Take(30).ToArray());
-        
         // * prepare the paylod for sending to the payment sevice
-        var layouRequest = new LayoutEnvio
-        {
-            Account = this.multipagoSettings.Account,
-            Product = this.multipagoSettings.Product,
-            Node = this.multipagoSettings.Node.ToString(),
-            Concept = LayoutEnvioConceptos.PANUCO.ToString(),
-            Ammount = padron.Total,
-            Customername = padron.RazonSocial,
-            Currency = LayoutEnvioCurrency.PesosMexicanos,
-            Urlsuccess = "https://caev.gob.mx/caev/confirmar-pago?status=1",
-            Urlfailure = "https://caev.gob.mx/caev/confirmar-pago?status=0",
-            Order = orderID.ToString(),
-            Reference = ReferenceMaker.GetReference(padron)
-        };
-        
-        // * make the signature 
-        layouRequest.Signature = HashUtils.GetHash2(
-            string.Format("{0}{1}{2}", layouRequest.Order, layouRequest.Reference, layouRequest.AmmountString),
-            this.multipagoSettings.Key
-        );
-
-        return View("PreparePayment", layouRequest);
+        try {
+            var layouRequest = this.invoiceService.MakeInvoiceRequestPayload(padron);
+            return View("PreparePayment", layouRequest);
+        }catch(Exception ex){
+            this._logger.LogError(ex, "Fail to make the layoutRequest for the payment");
+            ViewBag.ErrorMessage = "Error al generar la solicitud de pago, intente de nuevo o comuníquese con el administrador. ";
+            return View("PreparePayment", null);
+        }
     }
 
 }
