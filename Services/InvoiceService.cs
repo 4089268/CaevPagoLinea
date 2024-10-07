@@ -46,8 +46,8 @@ namespace CAEV.PagoLinea.Services {
                 Ammount = padron.Total,
                 Customername = padron.RazonSocial,
                 Currency = LayoutEnvioCurrency.PesosMexicanos,
-                Urlsuccess = "/api/invoice/validate?s=1",
-                Urlfailure = "/api/invoice/validate?s=0",
+                Urlsuccess = this.multipagoSettings.UrlResponse + "?s=1",
+                Urlfailure = this.multipagoSettings.UrlResponse + "?s=0",
                 Order = orderID.ToString(),
                 Reference = ReferenceMaker.GetReference(padron)
             };

@@ -9,6 +9,7 @@ namespace CAEV.PagoLinea.Data
         public int Account {get;set;}
         public int Product {get;set;}
         public int Node {get;set;}
-        public string Key {get;set;}
+        public string Key {get;set;} = default!;
+        public string UrlResponse {get;set;} = default!;
     }
 }
