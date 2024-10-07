@@ -1,5 +1,6 @@
 using System;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using CAEV.PagoLinea.Data;
 using CAEV.PagoLinea.Models;
 using CAEV.PagoLinea.Helpers;
@@ -11,7 +12,7 @@ namespace CAEV.PagoLinea.Services {
         private readonly ILogger<InvoiceService> logger = logger;
         private readonly PagoLineaContext pagoLineaContext = context;
         private readonly MultipagoSettings multipagoSettings = options.Value;
-        
+
         /// <summary>
         /// </summary>
         /// <param name="padron"></param>
@@ -45,8 +46,8 @@ namespace CAEV.PagoLinea.Services {
                 Ammount = padron.Total,
                 Customername = padron.RazonSocial,
                 Currency = LayoutEnvioCurrency.PesosMexicanos,
-                Urlsuccess = "https://caev.gob.mx/caev/confirmar-pago?status=1",
-                Urlfailure = "https://caev.gob.mx/caev/confirmar-pago?status=0",
+                Urlsuccess = "/api/invoice/validate?s=1",
+                Urlfailure = "/api/invoice/validate?s=0",
                 Order = orderID.ToString(),
                 Reference = ReferenceMaker.GetReference(padron)
             };
@@ -75,6 +76,59 @@ namespace CAEV.PagoLinea.Services {
             return layouRequest;
         }
 
+        public ValidatePaymentViewModel ProcessPayment(LayoutResponse response, int statusCode){
+            // * validate the response
+            var _validationSignaturePayload = string.Format("{0}{1}{2}{3}", response.Order, response.Reference, response.AmmountString, response.Authorization);
+            var _validationSignature = HashUtils.GetHash2( _validationSignaturePayload, this.multipagoSettings.Key );
+
+            logger.LogDebug("Response validation signature payload: [{payload}]", string.Format("{0}{1}{2}{3}", response.Order, response.Reference, response.AmmountString, response.Authorization) );
+            logger.LogDebug("Response validation signature:[{signature}]", _validationSignature);
+            logger.LogDebug("Response signature:[{signature}]", response.Signature);
+
+            if( response.Signature != _validationSignature){
+                throw new SecurityTokenInvalidSignatureException("The response signature is invalid.");
+            }
+
+            // * retrive the orderId
+            var orderPayment = this.pagoLineaContext.OrdersPayment.Find(response.Order);
+            if( orderPayment == null){
+                throw new KeyNotFoundException($"A order payment with code '{response.Order}' was not found on the system.");
+            }
+
+            // * update the date and the response code
+            orderPayment.ResponseAt = DateTime.Now;
+            orderPayment.ResponseCode = response.Response;
+            orderPayment.Authorization = response.Authorization;
+            this.pagoLineaContext.OrdersPayment.Update(orderPayment);
+            this.pagoLineaContext.SaveChanges();
+
+            logger.LogDebug("Response order: {orderId}", response.Order);
+
+
+            // * get the padron assosiated to the payment
+            var padron = this.pagoLineaContext.CuentasPadron.First(item => item.IdPadron == orderPayment.IdPadron && item.IdLocalidad == orderPayment.IdLocalidad);
+
+            // * prepare the response
+            var validatePaymentViewModel = new ValidatePaymentViewModel {
+                TransactionId = orderPayment.Code,
+                Date = orderPayment.ResponseAt!.Value,
+                UserName = padron.RazonSocial,
+                UserAccount = padron.IdCuenta.ToString(),
+                Ammount = orderPayment.Ammount,
+            };
+
+            int authorizationId = int.TryParse(response.Authorization, out int tmpAuthId)?tmpAuthId:0;
+            if( authorizationId == 0){
+                validatePaymentViewModel.PaymentStatus = ValidatePaymentViewModel.PaymentStatuses.Fail;
+                validatePaymentViewModel.Status = "Autorización de pago no exitoso.";
+                return validatePaymentViewModel;
+            }
+
+            validatePaymentViewModel.PaymentStatus = ValidatePaymentViewModel.PaymentStatuses.Success;
+            validatePaymentViewModel.Status = "Pago registrado con exito";
+            return validatePaymentViewModel;
+
+        }
     }
-    
+
 }

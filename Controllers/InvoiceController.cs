@@ -8,6 +8,7 @@ using CAEV.PagoLinea.Data;
 using Microsoft.Extensions.Options;
 using CAEV.PagoLinea.Helpers;
 using AspNetCore.ReCaptcha;
+using System.Globalization;
 
 namespace CAEV.PagoLinea.Controllers;
 
@@ -93,8 +94,7 @@ public class InvoiceController : Controller
     }
 
     [HttpPost]
-    public ActionResult InvoiceData(CuentaPadron padron)
-    {
+    public ActionResult InvoiceData(CuentaPadron padron) {
         
         // * reload the data
         this.pagoLineaContext.Entry(padron).Reload();
@@ -108,6 +108,28 @@ public class InvoiceController : Controller
             ViewBag.ErrorMessage = "Error al generar la solicitud de pago, intente de nuevo o comuníquese con el administrador. ";
             return View("PreparePayment", null);
         }
+    }
+
+    [Route("/api/invoice/validate")]
+    public ActionResult ValidatePayment(){
+        var model = new ValidatePaymentViewModel {
+            PaymentStatus = ValidatePaymentViewModel.PaymentStatuses.Success,
+            TransactionId = Guid.NewGuid().ToString().Replace("-",""),
+            Date = DateTime.Now,
+            UserName = "Juan Salvador Rangel",
+            UserAccount = "21456",
+            Ammount = 129.5m,
+            Status = "Pago exitoso"
+        };
+        return View(model);
+    }
+
+    [HttpPost]
+    [Route("/api/invoice/validate")]
+    public ActionResult ValidatePayment([FromBody] LayoutResponse layoutResponse, [FromQuery] string? s){
+        this._logger.LogDebug("New response recived: {resp}", layoutResponse);
+        var model = this.invoiceService.ProcessPayment(layoutResponse, Convert.ToInt32(s));
+        return View(model);
     }
 
 }
