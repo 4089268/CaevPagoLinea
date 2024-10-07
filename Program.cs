@@ -13,6 +13,7 @@ builder.Services.AddDbContext<PagoLineaContext>(options=>{
     options.UseSqlServer( builder.Configuration.GetConnectionString("PagoLinea") );
 });
 builder.Services.AddScoped<PadronService>();
+builder.Services.AddScoped<InvoiceService>();
 builder.Services.Configure<MultipagoSettings>(builder.Configuration.GetSection("MultipagoSettings"));
 builder.Services.AddReCaptcha(builder.Configuration.GetSection("ReCaptcha"));
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)

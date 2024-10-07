@@ -33,7 +33,7 @@
         <div class="card-body">
             @using (Html.BeginForm("InvoiceData", "Invoice", FormMethod.Post)){
 
-                @Html.HiddenFor(m => m.Id)
+                @Html.HiddenFor(model => model.Id);
 
                 <div class="mb-3">
                     <label for="localidad" class="form-label">Localidad</label>
@@ -62,11 +62,8 @@
                 </div>
 
                 <div class="d-flex justify-content-around">
-                    <a asp-action="index" asp-controller="Invoice" class="btn btn-lg btn-secondary text-white">
-                        Consultar otra cuenta
-                    </a>
-
-                    <input type="submit" class="btn btn-primary btn-lg btn-success" value="Confirmar Datos" />
+                    <a class="btn btn-secondary" asp-action="Index">Consultar otra cuenta</a>
+                    <input type="submit" class="btn btn-primary btn-success" value="Confirmar Datos" />
                 </div>
             }
         </div>

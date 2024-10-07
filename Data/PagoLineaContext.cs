@@ -11,6 +11,7 @@ namespace CAEV.PagoLinea.Data
         public DbSet<CatOficina> Oficinas {get;set;} = default!;
         public DbSet<CatLocalidad> Localidades {get;set;} = default!;
         public DbSet<User> Users {get;set;} = default!;
+        public DbSet<OrderPayment> OrdersPayment {get;set;} = default!;
 
         public PagoLineaContext(DbContextOptions options ) : base(options){
             //
@@ -54,6 +55,15 @@ namespace CAEV.PagoLinea.Data
                 .HasDefaultValueSql("getDate()")
                 .HasColumnType("datetime")
                 .ValueGeneratedOnAddOrUpdate();
+
+            // * OrderPayment entity
+            var orderPayment = modelBuilder.Entity<OrderPayment>();
+            userEntity.Property( p => p.CreatedAt)
+                .HasDefaultValueSql("getDate()")
+                .HasColumnType("datetime2")
+                .ValueGeneratedOnAdd();
+            userEntity.Property( p => p.UpdatedAt)
+                .HasColumnType("datetime2");
 
             
             // * default user

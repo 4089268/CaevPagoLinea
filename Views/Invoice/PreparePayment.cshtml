@@ -3,7 +3,7 @@
     Layout = "_GuestLayout";
 }
 
-@model CAEV.PagoLinea.LayoutEnvio
+@model CAEV.PagoLinea.LayoutEnvio?
 
 <div class="text-center">
     <p style="max-width: 44rem; margin: 0 auto ;">Ten tu recibo a la mano para realizar tu pago. Por favor, asegúrate de tener los detalles correctos antes de proceder con el pago de tu recibo.</p>
@@ -31,88 +31,53 @@
         <div class="card-header">
             3.- Realizar pago
         </div>
+
+        @if(Model != null){
         <div class="card-body">
-            <form method="post" action="https://prepro.adquiracloud.mx/clb/endpoint/caev">
-                <div class="mb-3">
-                    <label for="localidad" class="form-label">Account</label>
-                    @Html.TextBoxFor(model => model.Account, new { @class = "form-control", @disabled="true", @name="mp_account" })
-                </div>
-                <div class="mb-3">
-                    <label for="localidad" class="form-label">Num Orden</label>
-                    @Html.TextBoxFor(model => model.Order, new { @class = "form-control", @disabled="true", @name="mp_order" })
-                </div>
-
-                <div class="mb-3">
-                    <label for="localidad" class="form-label">Referencia</label>
-                    @Html.TextBoxFor(model => model.Reference, new { @class = "form-control", @disabled="true", @name="mp_reference" })
-                </div>
-                <div class="mb-3">
-                    <label for="localidad" class="form-label">Producto ID</label>
-                    @Html.TextBoxFor(model => model.Product, new { @class = "form-control", @disabled="true", @name="mp_product"})
-                </div>
-                <div class="mb-3">
-                    <label for="localidad" class="form-label">Node ID</label>
-                    @Html.TextBoxFor(model => model.Node, new { @class = "form-control", @disabled="true", @name="mp_node"})
-                </div>
-                <div class="mb-3">
-                    <label for="localidad" class="form-label">Concepto ID</label>
-                    @Html.TextBoxFor(model => model.Concept, new { @class = "form-control", @disabled="true", @name="mp_concept"})
-                </div>
-                <div class="mb-3">
-                    <label for="localidad" class="form-label">Total</label>
-                    @Html.TextBoxFor(model => model.Ammount, new { @class = "form-control", @disabled="true", @name="mp_ammount" })
-                </div>
-                <div class="mb-3">
-                    <label for="localidad" class="form-label">Currency ID</label>
-                    @Html.TextBoxFor(model => model.Currency, new { @class = "form-control", @disabled="true", @name="mp_currency" })
-                </div>
-                <div class="mb-3">
-                    <label for="localidad" class="form-label">Usuario</label>
-                    @Html.TextBoxFor(model => model.Customername, new { @class = "form-control", @disabled="true", @name="mp_customername" })
-                </div>
-                <div class="mb-3">
-                    <label for="localidad" class="form-label">Url Retorno</label>
-                    @Html.TextBoxFor(model => model.Urlsuccess, new { @class = "form-control", @disabled="true", @name="mp_urlsuccess" })
-                </div>
-                <div class="mb-3">
-                    <label for="localidad" class="form-label">Firma Digital</label>
-                    @Html.TextBoxFor(model => model.Signature, new { @class = "form-control", @disabled="true", @name="mp_signature", @multiline="true" })
-                </div>
-
-                <div class="d-flex justify-content-around">
-                    <a asp-action="index" asp-controller="Invoice" class="btn btn-lg btn-secondary text-white">
-                        Consultar otra cuenta
-                    </a>
-                    <input type="submit" class="btn btn-primary btn-lg btn-success" value="Realizar Pago" />
-                </div>
+            <form id="form" name="form" method="POST" action="https://prepro.adquiracloud.mx/multipagos/portal/v2/payment">
+                <input type="hidden" name="mp_product" value="@Model.Product" />
+                <input type="hidden" name="mp_reference" value="@Model.Reference" />
+                <input type="hidden" name="mp_order" value="@Model.Order" />
+                <input type="hidden" name="mp_amount" value="@Model.AmmountString" />
+                <input type="hidden" name="mp_concept" value="@Model.Concept" />
+                <input type="hidden" name="mp_account" value="@Model.Account" />
+                <input type="hidden" name="mp_node" value="@Model.Node" />
+                <input type="hidden" name="mp_customername" value="@Model.Customername" />
+                <input type="hidden" name="mp_currency" value="@Model.Currency" />
+                <input type="hidden" name="mp_signature" value="@Model.Signature" />
+                <input type="hidden" name="mp_urlsuccess" value="@Model.Urlsuccess" />
+                <input type="hidden" name="mp_urlfailure" value="@Model.Urlfailure" />
             </form>
+            <div class="d-flex flex-column align-items-center justify-content-around">
+                <div>Procesando solicitud</div>
+
+                <div class="spinner-border my-2" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
         </div>
+        }else{
+            <div class="card-body">
+                <div class="alert alert-danger" role="alert">
+                    @ViewBag.ErrorMessage
+                </div>
+                <div class="d-flex justify-content-center">
+                    <a class="btn btn-secondary mx-auto" asp-action="Index">Continuar</a>
+                </div>
+            </div>
+        }
     </div>
 
 </div>
 
-
-<style>
-    .stepwizard {
-    display: flex;
-    justify-content: space-between;
+@section scripts {
+    @if( Model != null){
+        <script>
+            var tid = setInterval( function () {
+                if ( document.readyState !== 'complete' ) return;
+                clearInterval( tid );
+                document.form.submit();
+            }, 500 );
+        </script>
+    }
 }
-.stepwizard .btn {
-    margin: 0 5px;
-}
-.stepwizard-step {
-    flex: 1;
-    text-align: center;
-}
-.stepwizard-step .btn-circle {
-    width: 40px;
-    height: 40px;
-    line-height: 40px;
-    border-radius: 50%;
-}
-
-.card.datos{
-    max-width: 32rem;
-    margin: 1rem auto;
-}
-</style>

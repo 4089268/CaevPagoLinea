@@ -8,6 +8,7 @@ using CAEV.PagoLinea.Data;
 using Microsoft.Extensions.Options;
 using CAEV.PagoLinea.Helpers;
 using AspNetCore.ReCaptcha;
+using System.Globalization;
 
 namespace CAEV.PagoLinea.Controllers;
 
@@ -15,13 +16,14 @@ public class InvoiceController : Controller
 {
     private readonly ILogger<InvoiceController> _logger;
     private readonly PadronService padronService;
-    private readonly MultipagoSettings multipagoSettings;
+    private readonly PagoLineaContext pagoLineaContext;
+    private readonly InvoiceService invoiceService;
 
-    public InvoiceController(ILogger<InvoiceController> logger, PadronService padronService, IOptions<MultipagoSettings> options)
-    {
+    public InvoiceController(ILogger<InvoiceController> logger, PadronService padronService, PagoLineaContext pagoLineaContext, InvoiceService invoiceService ) {
         _logger = logger;
         this.padronService = padronService;
-        this.multipagoSettings = options.Value;
+        this.pagoLineaContext = pagoLineaContext;
+        this.invoiceService = invoiceService;
     }
 
     [HttpGet]
@@ -90,31 +92,41 @@ public class InvoiceController : Controller
 
     [HttpPost]
     public ActionResult InvoiceData(CuentaPadron padron) {
-
-        // * retrive the padron Id
-        var _padron = this.padronService.GetPadron(padron.Id);
         
-        // * prepare the form for the payment
-        var layouRequest = new LayoutEnvio();
-        layouRequest.Account = this.multipagoSettings.Account;
-        layouRequest.Product = this.multipagoSettings.Product;
-        layouRequest.Node = this.multipagoSettings.Node.ToString();
-        layouRequest.Concept = LayoutEnvioConceptos.PANUCO.ToString();
-        layouRequest.Ammount = _padron.Total;
-        layouRequest.Customername = _padron.RazonSocial;
-        layouRequest.Currency = LayoutEnvioCurrency.PesosMexicanos;
-        layouRequest.Urlsuccess = "https://caev.gob.mx/caev/confirmar-pago";
-        layouRequest.Urlfailure = "https://caev.gob.mx/caev/confirmar-pago";
-        layouRequest.Order = Guid.NewGuid().ToString().Replace("-","");
-        layouRequest.Reference = ReferenceFactory.Generate(_padron);
-        layouRequest.Signature = HashUtils.GetHash(
-            this.multipagoSettings.Key,
-            string.Format("{0}{1}{2}", layouRequest.Order, layouRequest.Reference, layouRequest.Ammount)
-        );
+        // * reload the data
+        this.pagoLineaContext.Entry(padron).Reload();
 
-        // TODO: save a record on the local db of the paymet latout
+        // * prepare the paylod for sending to the payment sevice
+        try {
+            var layouRequest = this.invoiceService.MakeInvoiceRequestPayload(padron);
+            return View("PreparePayment", layouRequest);
+        }catch(Exception ex){
+            this._logger.LogError(ex, "Fail to make the layoutRequest for the payment");
+            ViewBag.ErrorMessage = "Error al generar la solicitud de pago, intente de nuevo o comuníquese con el administrador. ";
+            return View("PreparePayment", null);
+        }
+    }
 
-        return View("PreparePayment", layouRequest);
+    [Route("/api/invoice/validate")]
+    public ActionResult ValidatePayment(){
+        var model = new ValidatePaymentViewModel {
+            PaymentStatus = ValidatePaymentViewModel.PaymentStatuses.Success,
+            TransactionId = Guid.NewGuid().ToString().Replace("-",""),
+            Date = DateTime.Now,
+            UserName = "Juan Salvador Rangel",
+            UserAccount = "21456",
+            Ammount = 129.5m,
+            Status = "Pago exitoso"
+        };
+        return View(model);
+    }
+
+    [HttpPost]
+    [Route("/api/invoice/validate")]
+    public ActionResult ValidatePayment([FromBody] LayoutResponse layoutResponse, [FromQuery] string? s){
+        this._logger.LogDebug("New response recived: {resp}", layoutResponse);
+        var model = this.invoiceService.ProcessPayment(layoutResponse, Convert.ToInt32(s));
+        return View(model);
     }
 
 }
