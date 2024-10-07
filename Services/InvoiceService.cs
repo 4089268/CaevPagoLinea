@@ -117,16 +117,22 @@ namespace CAEV.PagoLinea.Services {
                 Ammount = orderPayment.Ammount,
             };
 
-            int authorizationId = int.TryParse(response.MpAuthorization, out int tmpAuthId)?tmpAuthId:0;
-            if( authorizationId == 0){
+            if( statusCode == 0){
                 validatePaymentViewModel.PaymentStatus = ValidatePaymentViewModel.PaymentStatuses.Fail;
-                validatePaymentViewModel.Status = "PAGO NO EXITOSO";
+                validatePaymentViewModel.Status = "PAGO RECHAZADO";
                 return validatePaymentViewModel;
             }
 
             if( response.MpAuthorization == "000000"){
                 validatePaymentViewModel.PaymentStatus = ValidatePaymentViewModel.PaymentStatuses.Pending;
                 validatePaymentViewModel.Status = "EN PROCESO DE PAGO";
+                return validatePaymentViewModel;
+            }
+
+            int authorizationId = int.TryParse(response.MpAuthorization, out int tmpAuthId)?tmpAuthId:0;
+            if( authorizationId == 0){
+                validatePaymentViewModel.PaymentStatus = ValidatePaymentViewModel.PaymentStatuses.Fail;
+                validatePaymentViewModel.Status = "PAGO NO EXITOSO";
                 return validatePaymentViewModel;
             }
 

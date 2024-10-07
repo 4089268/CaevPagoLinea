@@ -119,7 +119,7 @@ public class InvoiceController : Controller
             MpConcept = formValues["mp_concept"]!,
             MpResponse = formValues["mp_response"]!,
             MpSignature = formValues["mp_signature"]!,
-            MpAmount =  Convert.ToInt32( formValues["mp_amount"] ),
+            MpAmount =  Convert.ToDecimal( formValues["mp_amount"] ),
             MpPaymentMethod = formValues["mp_paymentMethod"]!,
             MpAuthorization = formValues["mp_authorization"]!
         };
