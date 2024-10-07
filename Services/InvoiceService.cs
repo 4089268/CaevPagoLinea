@@ -78,31 +78,31 @@ namespace CAEV.PagoLinea.Services {
 
         public ValidatePaymentViewModel ProcessPayment(LayoutResponse response, int statusCode){
             // * validate the response
-            var _validationSignaturePayload = string.Format("{0}{1}{2}{3}", response.Order, response.Reference, response.AmmountString, response.Authorization);
+            var _validationSignaturePayload = string.Format("{0}{1}{2}{3}", response.MpOrder, response.MpReference, response.AmmountString, response.MpAuthorization);
             var _validationSignature = HashUtils.GetHash2( _validationSignaturePayload, this.multipagoSettings.Key );
 
-            logger.LogDebug("Response validation signature payload: [{payload}]", string.Format("{0}{1}{2}{3}", response.Order, response.Reference, response.AmmountString, response.Authorization) );
+            logger.LogDebug("Response validation signature payload: [{payload}]", _validationSignaturePayload);
             logger.LogDebug("Response validation signature:[{signature}]", _validationSignature);
-            logger.LogDebug("Response signature:[{signature}]", response.Signature);
+            logger.LogDebug("Response signature:[{signature}]", response.MpSignature);
 
-            if( response.Signature != _validationSignature){
+            if( response.MpSignature != _validationSignature){
                 throw new SecurityTokenInvalidSignatureException("The response signature is invalid.");
             }
 
             // * retrive the orderId
-            var orderPayment = this.pagoLineaContext.OrdersPayment.Find(response.Order);
+            var orderPayment = this.pagoLineaContext.OrdersPayment.Find(response.MpOrder);
             if( orderPayment == null){
-                throw new KeyNotFoundException($"A order payment with code '{response.Order}' was not found on the system.");
+                throw new KeyNotFoundException($"A order payment with code '{response.MpOrder}' was not found on the system.");
             }
 
             // * update the date and the response code
             orderPayment.ResponseAt = DateTime.Now;
-            orderPayment.ResponseCode = response.Response;
-            orderPayment.Authorization = response.Authorization;
+            orderPayment.ResponseCode = response.MpResponse;
+            orderPayment.Authorization = response.MpAuthorization;
             this.pagoLineaContext.OrdersPayment.Update(orderPayment);
             this.pagoLineaContext.SaveChanges();
 
-            logger.LogDebug("Response order: {orderId}", response.Order);
+            logger.LogDebug("Response order: {orderId}", response.MpOrder);
 
 
             // * get the padron assosiated to the payment
@@ -117,15 +117,21 @@ namespace CAEV.PagoLinea.Services {
                 Ammount = orderPayment.Ammount,
             };
 
-            int authorizationId = int.TryParse(response.Authorization, out int tmpAuthId)?tmpAuthId:0;
+            int authorizationId = int.TryParse(response.MpAuthorization, out int tmpAuthId)?tmpAuthId:0;
             if( authorizationId == 0){
                 validatePaymentViewModel.PaymentStatus = ValidatePaymentViewModel.PaymentStatuses.Fail;
-                validatePaymentViewModel.Status = "Autorización de pago no exitoso.";
+                validatePaymentViewModel.Status = "PAGO NO EXITOSO";
+                return validatePaymentViewModel;
+            }
+
+            if( response.MpAuthorization == "000000"){
+                validatePaymentViewModel.PaymentStatus = ValidatePaymentViewModel.PaymentStatuses.Pending;
+                validatePaymentViewModel.Status = "EN PROCESO DE PAGO";
                 return validatePaymentViewModel;
             }
 
             validatePaymentViewModel.PaymentStatus = ValidatePaymentViewModel.PaymentStatuses.Success;
-            validatePaymentViewModel.Status = "Pago registrado con exito";
+            validatePaymentViewModel.Status = "PAGO EXITOSO";
             return validatePaymentViewModel;
 
         }
