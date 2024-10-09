@@ -42,9 +42,9 @@ namespace CAEV.PagoLinea.Services {
             var orderID = new string(Guid.NewGuid().ToString().Replace("-","").Take(30).ToArray());
 
             // * find if the reference is already stored
-            var oldOrderPayment = this.pagoLineaContext.OrdersPayment.FirstOrDefault( item => item.Reference == _reference);
-            if(oldOrderPayment != null){
-                orderID = oldOrderPayment.Code;
+            var orderPayment = this.pagoLineaContext.OrdersPayment.FirstOrDefault( item => item.Reference == _reference);
+            if(orderPayment != null){
+                orderID = orderPayment.Code;
             }
             
             // * prepare the paylod for sending to the payment sevice
@@ -69,18 +69,21 @@ namespace CAEV.PagoLinea.Services {
             );
 
             // * save a record of the payload
-            var orderPayment = new OrderPayment {
-                Code = orderID,
-                IdLocalidad = padron.IdLocalidad,
-                IdPadron = padron.IdPadron,
-                Ammount = layouRequest.Ammount,
-                Reference = layouRequest.Reference,
-                Concept = layouRequest.Concept,
-                Node = layouRequest.Node,
-                CreatedAt = DateTime.Now
-            };
-            this.pagoLineaContext.OrdersPayment.Add(orderPayment);
-            this.pagoLineaContext.SaveChanges();
+            if(orderPayment == null){
+                orderPayment = new OrderPayment {
+                    Code = orderID,
+                    IdLocalidad = padron.IdLocalidad,
+                    IdPadron = padron.IdPadron,
+                    Ammount = layouRequest.Ammount,
+                    Reference = layouRequest.Reference,
+                    Concept = layouRequest.Concept,
+                    Node = layouRequest.Node,
+                    CreatedAt = DateTime.Now
+                };
+                this.pagoLineaContext.OrdersPayment.Add(orderPayment);
+                this.pagoLineaContext.SaveChanges();
+            }
+            
             this.logger.LogInformation("New order payment record saved with id {orderCode}", orderPayment.Code);
 
             return layouRequest;
