@@ -30,6 +30,8 @@ namespace CAEV.PagoLinea.Models
         public DateTime CreatedAt {get;set;}
         public DateTime UpdatedAt {get;set;}
         public int Sector {get;set;}
+        public int Af {get;set;}
+        public int Mf {get;set;}
 
         public string TotalFormated {
             get => Total.ToString("c2", new CultureInfo("es-MX"));

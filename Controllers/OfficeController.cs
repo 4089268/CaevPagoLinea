@@ -108,7 +108,9 @@ public class OfficeController : Controller
                     IVA = p.Iva,
                     Total = p.Total,
                     PeriodoFactura = p.MesFacturado,
-                    Sector = p.Sector
+                    Sector = p.Sector,
+                    Af = p.Af,
+                    Mf = p.Mf
                 };
                 _logger.LogInformation("Padron Id '{padron}' added!", p.IdPadron);
                 this.pagoLineaContext.CuentasPadron.Add(newRecord);

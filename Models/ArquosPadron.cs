@@ -17,6 +17,8 @@ namespace CAEV.PagoLinea.Models
         public int IdLocalidad { get; set; }
         public string Localidad { get; set; } = default!;
         public int Sector { get; set; }
+        public int Af { get; set; }
+        public int Mf { get; set; }
 
         public static PadronRecord FromDataReader(IDataReader reader ){
             var record = new PadronRecord {
@@ -32,6 +34,8 @@ namespace CAEV.PagoLinea.Models
                 IdLocalidad = reader["id_localidad"] != DBNull.Value ? Convert.ToInt32(reader["id_localidad"]) : 0,
                 Localidad = reader["_poblacion"] != DBNull.Value ? reader["_poblacion"].ToString() : string.Empty,
                 Sector = reader["sector"] != DBNull.Value ? Convert.ToInt32(reader["sector"]) : 0,
+                Af = reader["af"] != DBNull.Value ? Convert.ToInt32(reader["af"]) : 0,
+                Mf = reader["mf"] != DBNull.Value ? Convert.ToInt32(reader["mf"]) : 0
             };
             return record;
         }
