@@ -35,9 +35,19 @@ namespace CAEV.PagoLinea.Services {
                     break;
             }
 
+            // * make this
+            var _reference = ReferenceMaker.GetReference(padron);
+
+            // * prepare the order ID
+            var orderID = new string(Guid.NewGuid().ToString().Replace("-","").Take(30).ToArray());
+
+            // * find if the reference is already stored
+            var oldOrderPayment = this.pagoLineaContext.OrdersPayment.FirstOrDefault( item => item.Reference == _reference);
+            if(oldOrderPayment != null){
+                orderID = oldOrderPayment.Code;
+            }
             
             // * prepare the paylod for sending to the payment sevice
-            var orderID = new string(Guid.NewGuid().ToString().Replace("-","").Take(30).ToArray());
             var layouRequest = new LayoutEnvio {
                 Account = this.multipagoSettings.Account,
                 Product = this.multipagoSettings.Product,
@@ -49,7 +59,7 @@ namespace CAEV.PagoLinea.Services {
                 Urlsuccess = this.multipagoSettings.UrlResponse + "?s=1",
                 Urlfailure = this.multipagoSettings.UrlResponse + "?s=0",
                 Order = orderID.ToString(),
-                Reference = ReferenceMaker.GetReference(padron)
+                Reference = _reference
             };
 
             // * make the signature
