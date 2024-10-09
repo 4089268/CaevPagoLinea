@@ -24,6 +24,9 @@ namespace CAEV.PagoLinea.Models
         public DateTime? CreatedAt {get;set;}
         public DateTime? ResponseAt {get;set;}
 
+        public String? PaymentMethod {get;set;}
+        public String? Message {get;set;}
+
         [NotMapped]
         public string ConceptName {
             get {

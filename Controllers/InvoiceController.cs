@@ -111,21 +111,24 @@ public class InvoiceController : Controller
     [Consumes("application/x-www-form-urlencoded")]
     [Route("/api/invoice/validate")]
     public ActionResult ValidatePayment([FromForm] IFormCollection formValues, [FromQuery] string? s){
+
         // * cast the response
         var layoutResponse = new LayoutResponse(){
+            Success = Convert.ToInt32(s) == 1,
             MpAccount = Convert.ToInt32( formValues["mp_account"] ),
             MpOrder = formValues["mp_order"]!,
             MpReference = formValues["mp_reference"]!,
             MpConcept = formValues["mp_concept"]!,
             MpResponse = formValues["mp_response"]!,
             MpSignature = formValues["mp_signature"]!,
-            MpAmount =  Convert.ToDecimal( formValues["mp_amount"] ),
+            MpAmount = Convert.ToDecimal( formValues["mp_amount"] ),
             MpPaymentMethod = formValues["mp_paymentMethod"]!,
-            MpAuthorization = formValues["mp_authorization"]!
+            MpAuthorization = formValues["mp_authorization"]!,
+            MpResponseMsg = formValues["mp_responsemsg"]
         };
 
         // * process the response
-        var model = this.invoiceService.ProcessPayment(layoutResponse, Convert.ToInt32(s));
+        var model = this.invoiceService.ProcessPayment(layoutResponse );
         
         return View(model);
     }

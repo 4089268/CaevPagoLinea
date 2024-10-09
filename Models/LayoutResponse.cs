@@ -6,6 +6,8 @@ using System.Text.Json.Serialization;
 namespace CAEV.PagoLinea.Models {
     public class LayoutResponse {
         
+        public bool Success {get;set;} = false;
+
         public int MpAccount { get; set; }
         public string MpOrder { get; set; } = default!;
         public string MpReference { get; set; } = default!;
@@ -15,13 +17,14 @@ namespace CAEV.PagoLinea.Models {
         public decimal MpAmount { get; set; }
         public string MpPaymentMethod { get; set; } = default!;
         public string MpAuthorization { get; set; } = default!;
+        public string? MpResponseMsg { get; set; }
+
 
         public string? MpNode { get; set; }
         public string? MpCurrency { get; set; }
         public string? MpPaymentMethodCode { get; set; }
         public string? MpPaymentMethodComplete { get; set; }
         public string? MpResponseComplete { get; set; }
-        public string? MpResponseMsg { get; set; }
         public string? MpResponseMsgComplete { get; set; }
         public string? MpAuthorizationComplete { get; set; }
         public string? MpPan { get; set; }

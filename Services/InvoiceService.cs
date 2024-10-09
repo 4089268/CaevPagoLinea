@@ -76,7 +76,13 @@ namespace CAEV.PagoLinea.Services {
             return layouRequest;
         }
 
-        public ValidatePaymentViewModel ProcessPayment(LayoutResponse response, int statusCode){
+        /// <summary>
+        /// </summary>
+        /// <param name="response"></param>
+        /// <returns></returns>
+        /// <exception cref="SecurityTokenInvalidSignatureException">The signature is invalid</exception>
+        /// <exception cref="KeyNotFoundException">Order payment not found</exception>
+        public ValidatePaymentViewModel ProcessPayment(LayoutResponse response){
             // * validate the response
             var _validationSignaturePayload = string.Format("{0}{1}{2}{3}", response.MpOrder, response.MpReference, response.AmmountString, response.MpAuthorization);
             var _validationSignature = HashUtils.GetHash2( _validationSignaturePayload, this.multipagoSettings.Key );
@@ -99,6 +105,8 @@ namespace CAEV.PagoLinea.Services {
             orderPayment.ResponseAt = DateTime.Now;
             orderPayment.ResponseCode = response.MpResponse;
             orderPayment.Authorization = response.MpAuthorization;
+            orderPayment.PaymentMethod = response.MpPaymentMethod;
+            orderPayment.Message = response.MpResponseMsg;
             this.pagoLineaContext.OrdersPayment.Update(orderPayment);
             this.pagoLineaContext.SaveChanges();
 
@@ -116,31 +124,44 @@ namespace CAEV.PagoLinea.Services {
                 UserAccount = padron.IdCuenta.ToString(),
                 Ammount = orderPayment.Ammount,
             };
-
-            if( statusCode == 0){
+            
+            if(!response.Success){
                 validatePaymentViewModel.PaymentStatus = ValidatePaymentViewModel.PaymentStatuses.Fail;
-                validatePaymentViewModel.Status = "PAGO RECHAZADO";
+                validatePaymentViewModel.Status = response.MpResponseMsg ?? "PAGO NO EXITOSO";
                 return validatePaymentViewModel;
             }
 
-            if( response.MpAuthorization == "000000"){
+            if( response.MpAuthorization == "000000" && ( response.MpPaymentMethod == InvoiceServicePaymentMethods.PRACTICAJA || response.MpPaymentMethod == InvoiceServicePaymentMethods.TRANSFERENCIA ) ){
                 validatePaymentViewModel.PaymentStatus = ValidatePaymentViewModel.PaymentStatuses.Pending;
-                validatePaymentViewModel.Status = "EN PROCESO DE PAGO";
+                validatePaymentViewModel.Status = response.MpResponseMsg ?? "EN PROCESO DE PAGO";
+                return validatePaymentViewModel;
+            }
+
+            if( !String.IsNullOrEmpty(response.MpAuthorization) && response.MpPaymentMethod == InvoiceServicePaymentMethods.CHEQUE ){
+                validatePaymentViewModel.PaymentStatus = ValidatePaymentViewModel.PaymentStatuses.Success;
+                validatePaymentViewModel.Status = response.MpResponseMsg ?? "PAGO EXITOSO";
                 return validatePaymentViewModel;
             }
 
             int authorizationId = int.TryParse(response.MpAuthorization, out int tmpAuthId)?tmpAuthId:0;
-            if( authorizationId == 0){
-                validatePaymentViewModel.PaymentStatus = ValidatePaymentViewModel.PaymentStatuses.Fail;
-                validatePaymentViewModel.Status = "PAGO NO EXITOSO";
+            if( authorizationId > 0){
+                validatePaymentViewModel.PaymentStatus = ValidatePaymentViewModel.PaymentStatuses.Success;
+                validatePaymentViewModel.Status = response.MpResponseMsg ?? "PAGO EXITOSO";
                 return validatePaymentViewModel;
             }
 
-            validatePaymentViewModel.PaymentStatus = ValidatePaymentViewModel.PaymentStatuses.Success;
-            validatePaymentViewModel.Status = "PAGO EXITOSO";
+            validatePaymentViewModel.PaymentStatus = ValidatePaymentViewModel.PaymentStatuses.Fail;
+            validatePaymentViewModel.Status = response.MpResponseMsg ?? "PAGO NO EXITOSO";
             return validatePaymentViewModel;
-
         }
     }
+
+    public class InvoiceServicePaymentMethods {
+        public static readonly string TARJETA = "TDX";
+        public static readonly string CHEQUE = "CIE";
+        public static readonly string PRACTICAJA = "SUC";
+        public static readonly string TRANSFERENCIA = "CIE_INTER";
+    }
+
 
 }
