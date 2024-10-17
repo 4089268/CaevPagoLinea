@@ -12,6 +12,7 @@ namespace CAEV.PagoLinea.Data
         public DbSet<CatLocalidad> Localidades {get;set;} = default!;
         public DbSet<User> Users {get;set;} = default!;
         public DbSet<OrderPayment> OrdersPayment {get;set;} = default!;
+        public DbSet<SystemOption> SystemOptions {get;set;} = default!;
 
         public PagoLineaContext(DbContextOptions options ) : base(options){
             //
@@ -78,6 +79,12 @@ namespace CAEV.PagoLinea.Data
                     Password = hashedPassword
                 }
             );
+
+            modelBuilder.Entity<SystemOption>().HasData(new SystemOption {
+                Id = 1,
+                Key = "ON-MAINTENANCE",
+                Value = "0"
+            });
 
             base.OnModelCreating(modelBuilder);
             
