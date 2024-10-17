@@ -1,0 +1,24 @@
+﻿.div-maintenance{
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+
+
+@media only screen and (max-width: 768px) {
+    .maintenance-container {
+        padding: 4px !important;
+        margin-top: 1rem !important;
+    }
+
+    .div-maintenance{
+        display: flex;
+        flex-flow: column;
+        align-items: center;
+        justify-content: space-around;
+    }
+    .div-maintenance .alert{
+        text-align: center;
+    }
+  
+  }

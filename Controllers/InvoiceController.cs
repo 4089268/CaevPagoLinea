@@ -29,6 +29,14 @@ public class InvoiceController : Controller
     [HttpGet]
     [Route("/")]
     public ActionResult Index() {
+
+        var onMaintenance = this.pagoLineaContext.SystemOptions.FirstOrDefault( item => item.Key == "ON-MAINTENANCE");
+        if( onMaintenance != null){
+            if( onMaintenance.Value.Trim() == "1"){
+                return View("OnMaintenance");
+            }
+        }
+
         return View( new InvoiceRequest());
     }
 
