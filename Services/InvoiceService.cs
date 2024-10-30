@@ -33,6 +33,9 @@ namespace CAEV.PagoLinea.Services {
                 case 27:
                     conceptId = LayoutEnvioConceptos.MARTINEZ_DE_LA_TORRE;
                     break;
+                case 1:
+                    conceptId = 54;
+                    break;
             }
 
             // * make this
