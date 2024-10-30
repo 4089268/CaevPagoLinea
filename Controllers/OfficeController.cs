@@ -61,8 +61,7 @@ public class OfficeController : Controller
 
             ViewBag.Message = "Oficina actualizada";
             ViewBag.MessageClass = "alert-success";
-            ViewBag.UpdatedRecords = results.UpdatedRecords;
-            ViewBag.NewRecords = results.NewRecords;
+            ViewBag.TotalRecords = results.TotalRecords;
             ViewBag.ExecutionTimes = (results.ExecutionTimes / 1000);
             return View();
         }
@@ -86,48 +85,33 @@ public class OfficeController : Controller
             var arquosService = new ArquosService(oficina.GetConnectionString());
 
             // * get the new padron
-            var padron = await Task.Run<ICollection<PadronRecord>>( () => arquosService.GetPadron() );
+            var padron = arquosService.GetPadron();
 
-            var newRecords = 0;
-            var updatedRecords = 0;
+            // Disable change tracking to improve bulk insert performance
+            pagoLineaContext.ChangeTracker.AutoDetectChangesEnabled = false;
+
+            var c = 0;
 
             // * fill the database with the new records
             foreach( var p in padron){
-                var _record = this.pagoLineaContext.CuentasPadron.FirstOrDefault( item => item.IdPadron == p.IdPadron && item.IdCuenta == p.IdCuenta && item.IdLocalidad == p.IdLocalidad);
-
-                if(_record != null){
-                    _record.RazonSocial = p.RazonSocial;
-                    _record.Subtotal = p.Subtotal;
-                    _record.IVA = p.Iva;
-                    _record.Total = p.Total;
-                    _record.PeriodoFactura = p.MesFacturado;
-                    _record.Af = p.Af;
-                    _record.Mf = p.Mf;
-                    _record.UpdatedAt = DateTime.Now;
-                    this.pagoLineaContext.CuentasPadron.Update(_record);
-                    updatedRecords ++;
-                    _logger.LogInformation("Padron Id '{padron}' updated!", p.IdPadron);
-                }
-                else{
-                    var newRecord = new CuentaPadron(){
-                        IdLocalidad = p.IdLocalidad,
-                        Localidad = p.Localidad,
-                        IdPadron = p.IdPadron,
-                        IdCuenta = p.IdCuenta,
-                        RazonSocial = p.RazonSocial,
-                        Localizacion = p.Localizacion??"",
-                        Subtotal = p.Subtotal,
-                        IVA = p.Iva,
-                        Total = p.Total,
-                        PeriodoFactura = p.MesFacturado,
-                        Sector = p.Sector,
-                        Af = p.Af,
-                        Mf = p.Mf
-                    };
-                    this.pagoLineaContext.CuentasPadron.Add(newRecord);
-                    newRecords ++;
-                    _logger.LogInformation("Padron Id '{padron}' added!", p.IdPadron);
-                }
+                var newRecord = new CuentaPadron(){
+                    IdLocalidad = p.IdLocalidad,
+                    Localidad = p.Localidad,
+                    IdPadron = p.IdPadron,
+                    IdCuenta = p.IdCuenta,
+                    RazonSocial = p.RazonSocial,
+                    Localizacion = p.Localizacion??"",
+                    Subtotal = p.Subtotal,
+                    IVA = p.Iva,
+                    Total = p.Total,
+                    PeriodoFactura = p.MesFacturado,
+                    Sector = p.Sector,
+                    Af = p.Af,
+                    Mf = p.Mf,
+                    Oficina = oficina
+                };
+                this.pagoLineaContext.CuentasPadron.Add(newRecord);
+                c ++;
             }
 
             // * save last update
@@ -139,9 +123,10 @@ public class OfficeController : Controller
 
             stopwatch.Stop();
 
+            pagoLineaContext.ChangeTracker.AutoDetectChangesEnabled = true;
+
             return new {
-                UpdatedRecords = updatedRecords,
-                NewRecords = newRecords,
+                TotalRecords = c,
                 ExecutionTimes = stopwatch.ElapsedMilliseconds
             };
         }
