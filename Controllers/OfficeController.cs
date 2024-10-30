@@ -138,6 +138,11 @@ public class OfficeController : Controller
                 }
             }
 
+            // Perform batch insert for new records
+            if (newRecords.Count > 0) {
+                await this.pagoLineaContext.CuentasPadron.AddRangeAsync(newRecords);
+            }
+
             // * save last update
             oficina.UltimaActualizacion = DateTime.Now;
             pagoLineaContext.Oficinas.Update(oficina);
