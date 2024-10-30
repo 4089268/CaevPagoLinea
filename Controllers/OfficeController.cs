@@ -61,7 +61,7 @@ public class OfficeController : Controller
 
             ViewBag.Message = "Oficina actualizada";
             ViewBag.MessageClass = "alert-success";
-            ViewBag.DeletedRecords = results.DeletedRecords;
+            ViewBag.UpdatedRecords = results.UpdatedRecords;
             ViewBag.NewRecords = results.NewRecords;
             ViewBag.ExecutionTimes = (results.ExecutionTimes / 1000);
             return View();
@@ -87,36 +87,48 @@ public class OfficeController : Controller
 
             // * get the new padron
             var padron = await Task.Run<ICollection<PadronRecord>>( () => arquosService.GetPadron() );
-            
-            // * get the localidaded of the office
-            var localidades = this.pagoLineaContext.Localidades.Where( item => item.OficinaId == oficina.Id).ToList();
 
-            // * delete the old records
-            int[] _locadlidadesIds = localidades.Select(item => item.Id).ToArray<int>();
-            var DeletedRecords = await this.pagoLineaContext.CuentasPadron.Where( item => _locadlidadesIds.Contains(item.Id)).ExecuteDeleteAsync();
-            
+            var newRecords = 0;
+            var updatedRecords = 0;
+
             // * fill the database with the new records
             foreach( var p in padron){
-                var newRecord = new CuentaPadron(){
-                    IdLocalidad = p.IdLocalidad,
-                    Localidad = p.Localidad,
-                    IdPadron = p.IdPadron,
-                    IdCuenta = p.IdCuenta,
-                    RazonSocial = p.RazonSocial,
-                    Localizacion = p.Localizacion??"",
-                    Subtotal = p.Subtotal,
-                    IVA = p.Iva,
-                    Total = p.Total,
-                    PeriodoFactura = p.MesFacturado,
-                    Sector = p.Sector,
-                    Af = p.Af,
-                    Mf = p.Mf
-                };
-                _logger.LogInformation("Padron Id '{padron}' added!", p.IdPadron);
-                this.pagoLineaContext.CuentasPadron.Add(newRecord);
-            }
+                var _record = this.pagoLineaContext.CuentasPadron.FirstOrDefault( item => item.IdPadron == p.IdPadron && item.IdCuenta == p.IdCuenta && item.IdLocalidad == p.IdLocalidad);
 
-            var NewRecords = padron.Count;
+                if(_record != null){
+                    _record.RazonSocial = p.RazonSocial;
+                    _record.Subtotal = p.Subtotal;
+                    _record.IVA = p.Iva;
+                    _record.Total = p.Total;
+                    _record.PeriodoFactura = p.MesFacturado;
+                    _record.Af = p.Af;
+                    _record.Mf = p.Mf;
+                    _record.UpdatedAt = DateTime.Now;
+                    this.pagoLineaContext.CuentasPadron.Update(_record);
+                    updatedRecords ++;
+                    _logger.LogInformation("Padron Id '{padron}' updated!", p.IdPadron);
+                }
+                else{
+                    var newRecord = new CuentaPadron(){
+                        IdLocalidad = p.IdLocalidad,
+                        Localidad = p.Localidad,
+                        IdPadron = p.IdPadron,
+                        IdCuenta = p.IdCuenta,
+                        RazonSocial = p.RazonSocial,
+                        Localizacion = p.Localizacion??"",
+                        Subtotal = p.Subtotal,
+                        IVA = p.Iva,
+                        Total = p.Total,
+                        PeriodoFactura = p.MesFacturado,
+                        Sector = p.Sector,
+                        Af = p.Af,
+                        Mf = p.Mf
+                    };
+                    this.pagoLineaContext.CuentasPadron.Add(newRecord);
+                    newRecords ++;
+                    _logger.LogInformation("Padron Id '{padron}' added!", p.IdPadron);
+                }
+            }
 
             // * save last update
             oficina.UltimaActualizacion = DateTime.Now;
@@ -128,8 +140,8 @@ public class OfficeController : Controller
             stopwatch.Stop();
 
             return new {
-                DeletedRecords,
-                NewRecords,
+                UpdatedRecords = updatedRecords,
+                NewRecords = newRecords,
                 ExecutionTimes = stopwatch.ElapsedMilliseconds
             };
         }
