@@ -75,6 +75,20 @@ public class OfficeController : Controller
     }
 
 
+    [HttpPost]
+    [Route("enable-updated")]
+    public IActionResult EnableOfficeCanUpdate([FromForm] int officeId, [FromForm] int enable){
+
+        var oficina = this.pagoLineaContext.Oficinas.FirstOrDefault(item => item.Id == officeId);
+        if( oficina != null){
+            oficina.Actualizable = enable == 1;
+            this.pagoLineaContext.Oficinas.Update(oficina);
+            this.pagoLineaContext.SaveChanges();
+        }
+
+        return Ok();
+    }
+
     #region Private functions
 
     private async Task<dynamic> UpdatePadronOffice(CatOficina oficina){

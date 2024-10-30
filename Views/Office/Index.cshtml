@@ -44,12 +44,9 @@
                     <td>@oficina.BaseDatos</td>
                     <td>@oficina.Usuario</td>
                     <td class="text-center">
-                        @if (oficina.Actualizable){
-                            <span class="badge rounded-pill bg-success text-bg-secondary">Si</span>
-                        }
-                        else {
-                            <span class="badge rounded-pill bg-warning text-bg-warning">No</span>
-                        }
+                        <div class="form-check form-switch">
+                            <input class="chb-oficina form-check-input mx-auto" type="checkbox" role="switch" id="chb_@oficina.Id" checked="@(oficina.Actualizable ?true:null)">
+                        </div>
                     </td>
                     <td class="text-center">
                         @( oficina.UltimaActualizacion == null ?"--" : oficina.UltimaActualizacion.Value.ToUniversalTime() )
@@ -62,3 +59,32 @@
         </tbody>
     </table>
 </div>
+
+@section scripts {
+    <script>
+        $(document).ready(function(){
+            $(".chb-oficina").change(function(sender) {
+                
+                var oficinaId = sender.target.id.split("_")[1];
+                var enable = this.checked ?1 :0;
+
+                $.ajax({
+                    url: '/admin/office/enable-updated', // URL of the API
+                    type: 'POST', // HTTP method
+                    contentType: 'application/x-www-form-urlencoded', //
+                    data: {
+                        officeId: oficinaId,
+                        enable: enable
+                    },
+                    success: function(data) {
+                        console.success("Actualizado");
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('AJAX Error: ', status, error);
+                    }
+                });
+
+            });
+        });
+    </script>
+}
