@@ -33,6 +33,8 @@ namespace CAEV.PagoLinea.Models
         public int Af {get;set;}
         public int Mf {get;set;}
 
+        public virtual CatOficina Oficina {get;set;} = default!;
+
         public string TotalFormated {
             get => Total.ToString("c2", new CultureInfo("es-MX"));
         }
