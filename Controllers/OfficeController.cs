@@ -62,6 +62,7 @@ public class OfficeController : Controller
             ViewBag.Message = "Oficina actualizada";
             ViewBag.MessageClass = "alert-success";
             ViewBag.TotalRecords = results.TotalRecords;
+            ViewBag.UpdatedRecords = results.UpdatedRecords;
             ViewBag.ExecutionTimes = (results.ExecutionTimes / 1000);
             return View();
         }
@@ -90,28 +91,51 @@ public class OfficeController : Controller
             // Disable change tracking to improve bulk insert performance
             pagoLineaContext.ChangeTracker.AutoDetectChangesEnabled = false;
 
-            var c = 0;
+            // Load existing records into a dictionary for faster lookup
+            var existingRecords = this.pagoLineaContext.CuentasPadron
+                .Where(item => item.Oficina == oficina)
+                .ToDictionary(item => item.IdPadron);
+            
+            var newRecords = new List<CuentaPadron>(); // List to hold new records for batch insert
+
+
+            var createdRecords = 0;
+            var updatedRecords = 0;
 
             // * fill the database with the new records
             foreach( var p in padron){
-                var newRecord = new CuentaPadron(){
-                    IdLocalidad = p.IdLocalidad,
-                    Localidad = p.Localidad,
-                    IdPadron = p.IdPadron,
-                    IdCuenta = p.IdCuenta,
-                    RazonSocial = p.RazonSocial,
-                    Localizacion = p.Localizacion??"",
-                    Subtotal = p.Subtotal,
-                    IVA = p.Iva,
-                    Total = p.Total,
-                    PeriodoFactura = p.MesFacturado,
-                    Sector = p.Sector,
-                    Af = p.Af,
-                    Mf = p.Mf,
-                    Oficina = oficina
-                };
-                this.pagoLineaContext.CuentasPadron.Add(newRecord);
-                c ++;
+                
+                if (existingRecords.TryGetValue(p.IdPadron, out var record)) {
+                    // Update existing record
+                    record.RazonSocial = p.RazonSocial;
+                    record.Total = p.Total;
+                    record.Subtotal = p.Subtotal;
+                    record.IVA = p.Iva;
+                    record.PeriodoFactura = p.MesFacturado;
+                    record.Af = p.Af;
+                    record.Mf = p.Mf;
+                    record.UpdatedAt = DateTime.Now;
+                    updatedRecords++;
+                } else {
+                    var newRecord = new CuentaPadron(){
+                        IdLocalidad = p.IdLocalidad,
+                        Localidad = p.Localidad,
+                        IdPadron = p.IdPadron,
+                        IdCuenta = p.IdCuenta,
+                        RazonSocial = p.RazonSocial,
+                        Localizacion = p.Localizacion??"",
+                        Subtotal = p.Subtotal,
+                        IVA = p.Iva,
+                        Total = p.Total,
+                        PeriodoFactura = p.MesFacturado,
+                        Sector = p.Sector,
+                        Af = p.Af,
+                        Mf = p.Mf,
+                        Oficina = oficina
+                    };
+                    newRecords.Add(newRecord);
+                    createdRecords ++;
+                }
             }
 
             // * save last update
@@ -126,7 +150,8 @@ public class OfficeController : Controller
             pagoLineaContext.ChangeTracker.AutoDetectChangesEnabled = true;
 
             return new {
-                TotalRecords = c,
+                TotalRecords = createdRecords,
+                UpdatedRecords = updatedRecords,
                 ExecutionTimes = stopwatch.ElapsedMilliseconds
             };
         }
