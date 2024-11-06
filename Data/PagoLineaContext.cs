@@ -37,8 +37,7 @@ namespace CAEV.PagoLinea.Data
                 .HasColumnType("datetime");
             cuentaPadronEntity.Property( p => p.UpdatedAt)
                 .HasDefaultValueSql("getDate()")
-                .HasColumnType("datetime")
-                .ValueGeneratedOnAddOrUpdate();
+                .HasColumnType("datetime");
 
             // * CatLocalidad Entity
             modelBuilder.Entity<CatLocalidad>()
@@ -54,8 +53,7 @@ namespace CAEV.PagoLinea.Data
                 .HasColumnType("datetime");
             userEntity.Property( p => p.UpdatedAt)
                 .HasDefaultValueSql("getDate()")
-                .HasColumnType("datetime")
-                .ValueGeneratedOnAddOrUpdate();
+                .HasColumnType("datetime");
 
             // * OrderPayment entity
             var orderPayment = modelBuilder.Entity<OrderPayment>();

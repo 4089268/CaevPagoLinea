@@ -129,6 +129,10 @@ public class OfficeController : Controller
                     record.Af = p.Af;
                     record.Mf = p.Mf;
                     record.UpdatedAt = DateTime.Now;
+
+                    // Mark the record as modified
+                    pagoLineaContext.Entry(record).State = EntityState.Modified;
+
                     updatedRecords++;
                 } else {
                     var newRecord = new CuentaPadron(){
