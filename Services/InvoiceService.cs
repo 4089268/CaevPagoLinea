@@ -25,18 +25,8 @@ namespace CAEV.PagoLinea.Services {
             if( _localidad == null) {
                 throw new KeyNotFoundException($"La localidad '{padron.IdLocalidad}' del padron '{padron.IdPadron}' no se encontro en el sistema" );
             }
-            var conceptId = 1;
-            switch(_localidad.OficinaId){
-                case 2:
-                    conceptId = LayoutEnvioConceptos.TUXPAN;
-                    break;
-                case 27:
-                    conceptId = LayoutEnvioConceptos.MARTINEZ_DE_LA_TORRE;
-                    break;
-                case 1:
-                    conceptId = 54;
-                    break;
-            }
+            var conceptAdapter = new ConceptAdapter();
+            var conceptId = conceptAdapter.GetConcept(_localidad.OficinaId, defaultConcept: 1);
 
             // * make this
             var _reference = ReferenceMaker.GetReference(padron);

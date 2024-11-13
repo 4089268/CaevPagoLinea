@@ -29,7 +29,7 @@ namespace CAEV.PagoLinea.Services
                 vp.direccion,
                 p.id_localidad,
                 isnull(p.sector,0) as sector,
-                vp._poblacion,
+                upper(vp._poblacion) as _poblacion,
                 p.af,
                 p.mf
             FROM Padron.vw_Cat_Padron vp

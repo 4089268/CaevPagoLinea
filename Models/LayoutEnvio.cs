@@ -64,5 +64,37 @@ namespace CAEV.PagoLinea {
         public static readonly int XICO = 32;
         public static readonly int TLALTETELA = 33;
 
+        public static readonly int ALVARADO = 34;
+        public static readonly int ANTON_LIZARDO = 35;
+        public static readonly int CARLOS_A_CARRILLO = 36;
+        public static readonly int CD_ALEMAN = 37;
+        public static readonly int CD_CUAUHTEMOC = 38;
+        public static readonly int CD_MENDOZA = 39;
+        public static readonly int CHACALTIANGUIS = 40;
+        public static readonly int CHICHICAXTLE = 41;
+        public static readonly int CHINAMECA = 42;
+        public static readonly int EL_HIGO = 43;
+        public static readonly int EMILIO_CARRANZA = 44;
+        public static readonly int IXHUATLAN_DEL_CAFE = 45;
+        public static readonly int IXHUATLAN_DEL_SURESTE = 46;
+        public static readonly int JUAN_DIAZ_COVARRUBIAS = 47;
+        public static readonly int JUAN_RGUEZ_CLARA = 48;
+        public static readonly int LAS_VIGAS = 49;
+        public static readonly int MISANTLA = 50;
+        public static readonly int PASO_DEL_MACHO = 51;
+        public static readonly int PEROTE = 52;
+        public static readonly int PIEDRAS_NEGRAS = 53;
+        public static readonly int POZA_RICA = 54;
+        public static readonly int PLATON_SANCHEZ = 55;
+        public static readonly int SALTABARRANCA = 56;
+        public static readonly int SAYULA_DE_ALEMAN = 57;
+        public static readonly int SOLEDAD_DE_DOBLADO = 58;
+        public static readonly int TEPETZINTLA = 59;
+        public static readonly int TLACOTALPAN = 60;
+        public static readonly int TLAPACOYAN = 61;
+        public static readonly int TOMATLAN = 62;
+        public static readonly int TRES_VALLES = 63;
+        public static readonly int VILLA_AZUETA = 64;
+
     }
 }
