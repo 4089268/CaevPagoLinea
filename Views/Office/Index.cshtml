@@ -66,15 +66,18 @@
     </table>
 </div>
 
+@section styles {
+    <link href="~/lib/sweetalert2/sweetalert2.min.css" rel="stylesheet">
+}
+
 @section scripts {
+    <script src="~/lib/sweetalert2/sweetalert2.all.min.js"></script>
     <script>
         $(document).ready(function(){
 
             $(".chb-oficina-update").change(function(sender) {
-                
                 var oficinaId = sender.target.id.split("_")[1];
                 var enable = this.checked ?1 :0;
-
                 $.ajax({
                     url: '/admin/office/enable-updated', // URL of the API
                     type: 'POST', // HTTP method
@@ -84,20 +87,20 @@
                         enable: enable
                     },
                     success: function(data) {
-                        console.success("Actualizado");
+                        Swal.fire({
+                            title: "Oficina actualizada",
+                            icon: "success"
+                        });
                     },
                     error: function(xhr, status, error) {
                         console.error('AJAX Error: ', status, error);
                     }
                 });
-
             });
 
             $(".chb-oficina-inactive").change(function(sender) {
-                
                 var oficinaId = sender.target.id.split("_")[1];
                 var inactive = this.checked ?1 :0;
-
                 $.ajax({
                     url: '/admin/office/change-status', // URL of the API
                     type: 'POST', // HTTP method
@@ -107,13 +110,15 @@
                         inactive: inactive
                     },
                     success: function(data) {
-                        console.success("Actualizado");
+                        Swal.fire({
+                            title: "Oficina actualizada",
+                            icon: "success"
+                        });
                     },
                     error: function(xhr, status, error) {
                         console.error('AJAX Error: ', status, error);
                     }
                 });
-
             });
         });
     </script>
