@@ -34,6 +34,19 @@ public class InvoiceController : Controller
         var onMaintenance = this.pagoLineaContext.SystemOptions.FirstOrDefault( item => item.Key == "ON-MAINTENANCE");
         if( onMaintenance != null){
             if( onMaintenance.Value.Trim() == "1"){
+
+                // get the message to display from the configuration table
+                string maintenanceMessage = "Disculpa las molestias, Estamos realizando algunas mejoras en nuestro sitio para brindarte un mejor servicio. Por favor, vuelve a intentarlo pronto o contáctanos si tienes alguna duda.";
+                try
+                {
+                    var systemOption = this.pagoLineaContext.SystemOptions.FirstOrDefault( item =>item.Key == "MAINTENANCE-TEXT");
+                    if(systemOption != null && !string.IsNullOrEmpty(systemOption.Value)){
+                        maintenanceMessage = systemOption.Value;
+                    }
+                }
+                catch (System.Exception) { }
+
+                ViewBag.MaintenanceMessage = maintenanceMessage;
                 return View("OnMaintenance");
             }
         }
@@ -57,7 +70,19 @@ public class InvoiceController : Controller
         }
         catch (OfficeDisabledException)
         {
-            ViewBag.ErrorMessage = "La oficina está desactivada actualmente. Por favor, inténtelo más tarde.";
+
+            // get the message to display from the configuration table
+            string officeDisabledMessage = "La oficina está desactivada actualmente. Por favor, inténtelo más tarde.";
+            try
+            {
+                var systemOption = this.pagoLineaContext.SystemOptions.FirstOrDefault( item =>item.Key == "OFFICE-INACTIVE-TEXT");
+                if(systemOption != null && !string.IsNullOrEmpty(systemOption.Value)){
+                    officeDisabledMessage = systemOption.Value;
+                }
+            }
+            catch (System.Exception) { }
+
+            ViewBag.ErrorMessage = officeDisabledMessage;
             return View(model);
         }
 

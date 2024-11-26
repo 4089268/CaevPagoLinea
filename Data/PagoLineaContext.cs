@@ -86,11 +86,27 @@ namespace CAEV.PagoLinea.Data
                 }
             );
 
-            modelBuilder.Entity<SystemOption>().HasData(new SystemOption {
-                Id = 1,
-                Key = "ON-MAINTENANCE",
-                Value = "0"
-            });
+            modelBuilder.Entity<SystemOption>( entity => {
+
+                entity.HasData(new SystemOption {
+                    Id = 1,
+                    Key = "ON-MAINTENANCE",
+                    Value = "0"
+                });
+
+                entity.HasData(new SystemOption {
+                    Id = 2,
+                    Key = "MAINTENANCE-TEXT",
+                    Value = "Disculpa las molestias, Estamos realizando algunas mejoras en nuestro sitio para brindarte un mejor servicio. Por favor, vuelve a intentarlo pronto o contáctanos si tienes alguna duda."
+                });
+
+                entity.HasData(new SystemOption {
+                    Id = 3,
+                    Key = "OFFICE-INACTIVE-TEXT",
+                    Value = "La oficina está desactivada actualmente. Por favor, inténtelo más tarde."
+                });
+
+            } );
 
             base.OnModelCreating(modelBuilder);
             
