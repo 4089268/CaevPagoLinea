@@ -30,6 +30,7 @@
                 <th>Base de Datos</th>
                 <th>Usuario</th>
                 <th>Actualizable</th>
+                <th>Inactivo</th>
                 <th>Ultima Actualizacion</th>
                 <th>Actualizar</th>
             </tr>
@@ -45,7 +46,12 @@
                     <td>@oficina.Usuario</td>
                     <td class="text-center">
                         <div class="form-check form-switch">
-                            <input class="chb-oficina form-check-input mx-auto" type="checkbox" role="switch" id="chb_@oficina.Id" checked="@(oficina.Actualizable ?true:null)">
+                            <input class="chb-oficina-update form-check-input mx-auto" type="checkbox" role="switch" id="chb_@oficina.Id" checked="@(oficina.Actualizable ?true:null)">
+                        </div>
+                    </td>
+                    <td class="text-center">
+                        <div class="form-check form-switch">
+                            <input class="chb-oficina-inactive form-check-input mx-auto" type="checkbox" role="switch" id="chb_@oficina.Id" checked="@(oficina.Inactivo ?true:null)">
                         </div>
                     </td>
                     <td class="text-center">
@@ -63,7 +69,8 @@
 @section scripts {
     <script>
         $(document).ready(function(){
-            $(".chb-oficina").change(function(sender) {
+
+            $(".chb-oficina-update").change(function(sender) {
                 
                 var oficinaId = sender.target.id.split("_")[1];
                 var enable = this.checked ?1 :0;
@@ -75,6 +82,29 @@
                     data: {
                         officeId: oficinaId,
                         enable: enable
+                    },
+                    success: function(data) {
+                        console.success("Actualizado");
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('AJAX Error: ', status, error);
+                    }
+                });
+
+            });
+
+            $(".chb-oficina-inactive").change(function(sender) {
+                
+                var oficinaId = sender.target.id.split("_")[1];
+                var inactive = this.checked ?1 :0;
+
+                $.ajax({
+                    url: '/admin/office/change-status', // URL of the API
+                    type: 'POST', // HTTP method
+                    contentType: 'application/x-www-form-urlencoded', //
+                    data: {
+                        officeId: oficinaId,
+                        inactive: inactive
                     },
                     success: function(data) {
                         console.success("Actualizado");

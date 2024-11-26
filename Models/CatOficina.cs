@@ -19,6 +19,7 @@ namespace CAEV.PagoLinea.Models
         public string Usuario {get;set;} = default!;
         public string Contraseña {get;set;} = default!;
         public bool Actualizable {get;set;}
+        public bool Inactivo {get;set;} = false;
         public DateTime? UltimaActualizacion {get;set;}
 
         public ICollection<CatLocalidad> Localidades { get; set; } = new List<CatLocalidad>();
