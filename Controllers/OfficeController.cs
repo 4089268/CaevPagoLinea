@@ -89,6 +89,20 @@ public class OfficeController : Controller
         return Ok();
     }
 
+    [HttpPost]
+    [Route("change-status")]
+    public IActionResult ChangeOfficeStatus([FromForm] int officeId, [FromForm] int inactive){
+
+        var oficina = this.pagoLineaContext.Oficinas.FirstOrDefault(item => item.Id == officeId);
+        if( oficina != null){
+            oficina.Inactivo = inactive == 1;
+            this.pagoLineaContext.Oficinas.Update(oficina);
+            this.pagoLineaContext.SaveChanges();
+        }
+
+        return Ok();
+    }
+
     #region Private functions
 
     private async Task<dynamic> UpdatePadronOffice(CatOficina oficina){
