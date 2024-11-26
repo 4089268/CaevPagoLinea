@@ -9,6 +9,7 @@ using Microsoft.Extensions.Options;
 using CAEV.PagoLinea.Helpers;
 using AspNetCore.ReCaptcha;
 using System.Globalization;
+using CAEV.PagoLinea.Exceptions;
 
 namespace CAEV.PagoLinea.Controllers;
 
@@ -49,11 +50,19 @@ public class InvoiceController : Controller
         }
 
         // * validate if padron exist
-        var padron = this.padronService.GetPadron(model.Localidad, model.Cuenta, model.Sector);
+        CuentaPadron? padron = null;
+        try
+        {
+            padron = this.padronService.GetPadron(model.Localidad, model.Cuenta, model.Sector);
+        }
+        catch (OfficeDisabledException)
+        {
+            ViewBag.ErrorMessage = "La oficina está desactivada actualmente. Por favor, inténtelo más tarde.";
+            return View(model);
+        }
+
         if( padron == null){
-            
             ViewBag.ErrorMessage = "No se encontró coincidencias en el sistema";
-            
             // Return the view with the model to show validation errors
             return View(model);
         }

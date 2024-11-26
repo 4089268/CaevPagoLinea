@@ -31,13 +31,21 @@ namespace CAEV.PagoLinea.Data
             }
 
             // * CuentaPadron entity
-            var cuentaPadronEntity = modelBuilder.Entity<CuentaPadron>();
-            cuentaPadronEntity.Property( p => p.CreatedAt)
-                .HasDefaultValueSql("getDate()")
-                .HasColumnType("datetime");
-            cuentaPadronEntity.Property( p => p.UpdatedAt)
-                .HasDefaultValueSql("getDate()")
-                .HasColumnType("datetime");
+            modelBuilder.Entity<CuentaPadron>( entity =>
+            {
+                entity.Property(p => p.CreatedAt)
+                    .HasDefaultValueSql("getDate()")
+                    .HasColumnType("datetime");
+
+                entity.Property(p => p.UpdatedAt)
+                    .HasDefaultValueSql("getDate()")
+                    .HasColumnType("datetime");
+
+                entity.HasOne(item => item.Oficina)
+                    .WithMany()
+                    .HasForeignKey("oficinaId");
+            });
+
 
             // * CatLocalidad Entity
             modelBuilder.Entity<CatLocalidad>()
