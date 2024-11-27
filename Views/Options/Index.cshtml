@@ -1,0 +1,100 @@
+﻿@{
+    ViewData["Title"] = "Opciones";
+}
+@model OptionsIndexViewModel
+
+<div class="container">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item" aria-current="page">
+                <a asp-action="Dashboard" asp-controller="Auth">Dashboard</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">
+                Opciones Generales
+            </li>
+        </ol>
+    </nav>
+</div>
+
+<div class="container my-1">
+    <h1 class="text-center text-uppercase" style="font-size: 1.75rem;">Opciones</h1>
+</div>
+
+<div class="container mt-4">
+    <div class="row">
+        
+        <div class="col-12 border rounded-2 px-4 pb-2 pt-3 my-2 bg-light">
+            <div class="form-check form-switch">
+                <label for="chb_mainteinance" class="form-label mx-2">Modo Mantenimiento</label>
+                @Html.CheckBoxFor(item=>item.MaintenainceMode, new {@class="chb-inactive form-check-input mx-auto", @role="switch", @id="chb_mainteinance"})
+            </div>
+        </div>
+
+        <div class="col-12 border rounded-2 px-4 py-2 my-2 bg-light">
+            <form id="mainteinancetextForm" class="col-12 mt-3">
+                <label for="txt_mainteinancetext" class="form-label">Texto en modo Mantenimiento</label>
+                @Html.TextAreaFor(item=>item.MaintenainceText, new {@class="form-control", @rows="3", @id="txt_mainteinancetext"})
+                <button type="submit" class="mt-2 btn btn-success">Actualizar</button>
+            </form>
+        </div>
+        
+    </div>
+</div>
+
+
+
+@section styles {
+    <link href="~/lib/sweetalert2/sweetalert2.min.css" rel="stylesheet">
+}
+
+@section scripts {
+    <script src="~/lib/sweetalert2/sweetalert2.all.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $(".chb-inactive").change(function(sender) {
+                var modoMainteinance = this.checked ?1 :0;
+                $.ajax({
+                    url: '/admin/options/change-status', // URL of the API
+                    type: 'POST', // HTTP method
+                    contentType: 'application/x-www-form-urlencoded', //
+                    data: {
+                        modoMainteinance: modoMainteinance
+                    },
+                    success: function(data) {
+                        Swal.fire({
+                            title: "Datos actualizados",
+                            icon: "success"
+                        });
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('AJAX Error: ', status, error);
+                    }
+                });
+            });
+        });
+
+        $(document).ready(function(){
+            $("#mainteinancetextForm").submit(function(sender) {
+                sender.preventDefault();
+                var textValue = $("#txt_mainteinancetext").val();
+                $.ajax({
+                    url: '/admin/options/change-mainteinance-text',
+                    type: 'POST', // HTTP method
+                    contentType: 'application/x-www-form-urlencoded', //
+                    data: {
+                        mainteinanceText: textValue
+                    },
+                    success: function(data) {
+                        Swal.fire({
+                            title: "Datos actualizados",
+                            icon: "success"
+                        });
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('AJAX Error: ', status, error);
+                    }
+                });
+            });
+        });
+    </script>
+}
