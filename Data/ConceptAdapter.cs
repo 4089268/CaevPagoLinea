@@ -20,7 +20,7 @@ namespace CAEV.PagoLinea.Data
                 new OfficeConcepto { OfficeName = "ISLA", OfficeId = 9, ConceptoId = null },
                 new OfficeConcepto { OfficeName = "ALTOTONGA", OfficeId = 10, ConceptoId = 30 },
                 new OfficeConcepto { OfficeName = "COSAMALOAPAN", OfficeId = 11, ConceptoId = 14 },
-                new OfficeConcepto { OfficeName = "RURALES COSAMALOAPAN", OfficeId = 12, ConceptoId = 64 },
+                new OfficeConcepto { OfficeName = "RURALES COSAMALOAPAN", OfficeId = 12, ConceptoId = 66 },
                 new OfficeConcepto { OfficeName = "NANCHITAL", OfficeId = 13, ConceptoId = 22 },
                 new OfficeConcepto { OfficeName = "COSOLEACAQUE", OfficeId = 14, ConceptoId = null },
                 new OfficeConcepto { OfficeName = "ACAYUCAN", OfficeId = 15, ConceptoId = 18 },
