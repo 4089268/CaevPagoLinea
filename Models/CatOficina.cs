@@ -21,6 +21,7 @@ namespace CAEV.PagoLinea.Models
         public bool Actualizable {get;set;}
         public bool Inactivo {get;set;} = false;
         public DateTime? UltimaActualizacion {get;set;}
+        public bool Visible {get;set;} = true;
 
         public ICollection<CatLocalidad> Localidades { get; set; } = new List<CatLocalidad>();
 

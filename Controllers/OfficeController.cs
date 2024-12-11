@@ -27,9 +27,9 @@ public class OfficeController : Controller
 
     [HttpGet]
     public ActionResult Index(){
-
-        var offices = this.pagoLineaContext.Oficinas.ToList();
-
+        var offices = this.pagoLineaContext.Oficinas
+            .Where(item=> item.Visible)
+            .ToList();
         return View( offices );
     }
 

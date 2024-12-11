@@ -72,7 +72,7 @@ namespace CAEV.PagoLinea.Data
             userEntity.Property( p => p.UpdatedAt)
                 .HasColumnType("datetime2");
 
-            
+
             // * default user
             var hashedPassword = BCrypt.Net.BCrypt.HashPassword("password123#");
 
