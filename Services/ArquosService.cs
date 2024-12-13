@@ -18,13 +18,14 @@ namespace CAEV.PagoLinea.Services
             List<PadronRecord> records = new();
 
             string query = @"
-            SELECT vp.id_padron,
+            SELECT
+                vp.id_padron,
                 vp.id_cuenta,
                 vp.razon_social,
                 vp._localizacion,
-                isnull(vp.subtotal,0) as subtotal,
-                isnull(vp.iva,0) as iva,
-                iif(r.valor=1,t.redondeado,isnull(vp.total,0)) as total,
+                isnull(s.s_subtotal,0) as subtotal,
+                isnull(s.s_iva,0) as iva,
+                iif(r.valor=1,t.redondeado,isnull(s.s_total,0)) as total,
                 vp._mesFacturado,
                 vp.direccion,
                 p.id_localidad,
@@ -34,12 +35,13 @@ namespace CAEV.PagoLinea.Services
                 p.mf
             FROM Padron.vw_Cat_Padron vp
             Inner Join padron.Cat_Padron p on p.id_padron=vp.id_padron
+            Left Outer Join Facturacion.Opr_Saldos s on s.id_padron=vp.id_padron
             Outer Apply   (
-                Select * From Global.uif_Redondear(isnull(vp.total,0))  ) as t
+                Select * From Global.uif_Redondear(isnull(s.s_total,0))  ) as t
             Outer Apply   (
-                select isnull(valor,0) as valor from global.cfg_parametros where parametro='REDONDEAR'  ) as r
+                select isnull(valor,0) as valor from global.cfg_parametros where parametro='REDONDEAR' ) as r
             Where isnull(vp.id_padron,0)>0 and isnull(vp.id_cuenta,0)>0 and IsNull(p.id_localidad,0) > 0 
-            And IsNull(p.id_localidad,0) In (Select id_poblacion from Global.Cfg_Oficinas With(NoLock) Where Isnull(inactivo,0)=0)";
+                And IsNull(p.id_localidad,0) In (Select id_poblacion from Global.Cfg_Oficinas With(NoLock) Where Isnull(inactivo,0)=0)";
 
             try {
                 using (SqlConnection connection = new SqlConnection(_connectionString)) {
