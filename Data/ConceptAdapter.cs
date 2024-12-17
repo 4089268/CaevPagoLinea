@@ -31,7 +31,7 @@ namespace CAEV.PagoLinea.Data
                 new OfficeConcepto { OfficeName = "RIO BLANCO", OfficeId = 20, ConceptoId = 29 },
                 new OfficeConcepto { OfficeName = "YANGA", OfficeId = 21, ConceptoId = 26 },
                 new OfficeConcepto { OfficeName = "ALVARADO", OfficeId = 22, ConceptoId = 34 },
-                new OfficeConcepto { OfficeName = "RURALES ALVARADO", OfficeId = 23, ConceptoId = 34 },
+                new OfficeConcepto { OfficeName = "RURALES ALVARADO", OfficeId = 23, ConceptoId = 35 },
                 new OfficeConcepto { OfficeName = "LAS CHOAPAS", OfficeId = 24, ConceptoId = 19 },
                 new OfficeConcepto { OfficeName = "AGUA DULCE", OfficeId = 25, ConceptoId = 20 },
                 new OfficeConcepto { OfficeName = "NARANJOS", OfficeId = 26, ConceptoId = null },
@@ -68,7 +68,7 @@ namespace CAEV.PagoLinea.Data
                 new OfficeConcepto { OfficeName = "CHICHICAXTLE", OfficeId = 57, ConceptoId = 41 },
                 new OfficeConcepto { OfficeName = "CD. ALEMAN", OfficeId = 58, ConceptoId = 37 },
                 new OfficeConcepto { OfficeName = "OTATITLAN", OfficeId = 59, ConceptoId = 13 },
-                new OfficeConcepto { OfficeName = "CARLOS A. CARRILLO", OfficeId = 60, ConceptoId = 16 },
+                new OfficeConcepto { OfficeName = "CARLOS A. CARRILLO", OfficeId = 60, ConceptoId = 36 },
                 new OfficeConcepto { OfficeName = "SAYULA DE ALEMAN", OfficeId = 61, ConceptoId = 57 },
                 new OfficeConcepto { OfficeName = "COATZACOALCOS", OfficeId = 62, ConceptoId = null },
                 new OfficeConcepto { OfficeName = "TLALTETELA", OfficeId = 63, ConceptoId = 33 },
@@ -99,7 +99,7 @@ namespace CAEV.PagoLinea.Data
     }
 
     public class OfficeConcepto {
-        public string OfficeName { get; set; }
+        public string OfficeName { get; set; } = default!;
         public int OfficeId { get; set; }
         public int? ConceptoId { get; set; }
     }
