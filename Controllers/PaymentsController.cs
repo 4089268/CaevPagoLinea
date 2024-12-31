@@ -79,4 +79,12 @@ public class PaymentsController : Controller
 
         return View(paymentDetails);
     }
+
+    [HttpGet]
+    [Route("uploadPayments")]
+    public ActionResult UploadPayments()
+    {
+        return View();
+    }
+
 }
