@@ -78,13 +78,13 @@
                             <td>@resume.Oficina</td>
                             <td>@resume.IdCuenta</td>
                             <td>@resume.RazonSocial</td>
-                            <td>@resume.TotalImporte</td>
+                            <td>@resume.TotalImporteCurrency</td>
                             <td>@resume.Af</td>
                             <td>@resume.Mf</td>
                             <td>@resume.Fecha.ToUniversalTime()</td>
                             <td>@resume.Estatus</td>
                             <td>
-                                <a type="button" href="@Url.Action("Details", "Payments", new { paymentId = resume.Id })" class="btn btn-primary btn-sm rounded">Detalle</a>
+                                <a type="button" asp-action="ShowPayment" asp-controller="Payments" asp-route-paymentId="@resume.Id" class="btn btn-primary btn-sm rounded">Detalle</a>
                             </td>
                         </tr>
                     }

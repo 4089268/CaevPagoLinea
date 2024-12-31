@@ -116,7 +116,7 @@ namespace CAEV.PagoLinea.Services
             PaymentDetails? recordDetails = null;
             
             var query = @"
-            SELECT  id,
+            SELECT id,
                 fecha,
                 fecha_dispersion,
                 comercio,
@@ -157,7 +157,7 @@ namespace CAEV.PagoLinea.Services
                 cpad_oficinaId,
                 oficina
             FROM [dbo].[vw_ConciliacionBancoDetails]
-            WHER id = @id";
+            WHERE id = @id";
 
             try
             {

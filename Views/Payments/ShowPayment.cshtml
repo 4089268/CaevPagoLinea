@@ -1,0 +1,200 @@
+﻿@{
+    ViewData["Title"] = "Detalle Pago";
+}
+@model PaymentDetails
+
+<div class="container">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item" aria-current="page">
+                <a asp-action="Dashboard" asp-controller="Auth">Dashboard</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">
+                <a  asp-action="Index"
+                    asp-controller="Payments"
+                    asp-route-oficinaId="@Model.OficinaId"
+                    asp-route-startDate="@Model.Fecha.ToString("yyyy-MM-dd")"
+                    asp-route-endDate="@Model.Fecha.ToString("yyyy-MM-dd")"
+                >
+                    Pagos Realizados @Model.Oficina
+                </a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">
+                Detalle Pago
+            </li>
+        </ol>
+    </nav>
+</div>
+
+<div class="container my-1">
+    <h1 class="text-center text-uppercase" style="font-size: 1.75rem;">Detalle Pago</h1>
+</div>
+
+<div class="container mt-4">
+    <form>
+
+        <div class="row mb-4 bg-light p-2 border rounded">
+            <div class="col-md-4">
+                <label class="form-label">ID</label>
+                <input type="text" class="form-control" value="@Model.Id" readonly>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Año Facturado</label>
+                <input type="text" class="form-control" value="@Model.Af" readonly>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Mes Facturado</label>
+                <input type="email" class="form-control" value="@Model.Mf" readonly>
+            </div>
+            <div class="col-12 mb-2"></div>
+        </div>
+
+        <div class="row mb-4 bg-light p-2 border rounded">
+            <div class="col-12 border-bottom mb-2 ">
+                <h2 class="fs-4">Datos del usuario</h2>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Oficina</label>
+                <input type="text" class="form-control" value="@Model.Oficina" readonly>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Localidad</label>
+                <input type="text" class="form-control" value="@Model.Localidad" readonly>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">ID Padron</label>
+                <input type="email" class="form-control" value="@Model.IdPadron" readonly>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Cuenta</label>
+                <input type="text" class="form-control" value="@Model.IdCuenta" readonly>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Razon Social</label>
+                <input type="text" class="form-control" value="@Model.RazonSocial" readonly>
+            </div>
+            <div class="col-12 mb-2"></div>
+        </div>
+
+
+        <div class="row mb-4 bg-light p-2 border rounded">
+            <div class="col-12 border-bottom mb-2 ">
+                <h2 class="fs-4">Datos del pago</h2>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Fecha de Pago</label>
+                <input type="text" class="form-control" value="@Model.Fecha.ToString("yyyy-MM-dd HH:mm:ss")" readonly>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Fecha Dispersion</label>
+                <input type="text" class="form-control" value="@Model.FechaDispersion?.ToString("yyyy-MM-dd HH:mm:ss")" readonly>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Comercio</label>
+                <input type="text" class="form-control" value="@Model.Comercio" readonly>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Unidad</label>
+                <input type="text" class="form-control" value="@Model.Unidad" readonly>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Concepto</label>
+                <input type="text" class="form-control" value="@Model.Concepto" readonly>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Referencia Comercio</label>
+                <input type="text" class="form-control" value="@Model.ReferenciaComercio" readonly>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Orden</label>
+                <input type="text" class="form-control" value="@Model.Orden" readonly>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Tipo</label>
+                <input type="text" class="form-control" value="@Model.Tipo" readonly>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Medio Pago</label>
+                <input type="text" class="form-control" value="@Model.MedioPago" readonly>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Titular</label>
+                <input type="text" class="form-control" value="@Model.Titular" readonly>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Banco</label>
+                <input type="text" class="form-control" value="@Model.Banco" readonly>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Referencia Tarjeta</label>
+                <input type="text" class="form-control" value="@Model.ReferenciaTarjeta" readonly>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Tipo Tarjeta</label>
+                <input type="text" class="form-control" value="@Model.TipoTarjeta" readonly>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Autorizacion</label>
+                <input type="text" class="form-control" value="@Model.Autorizacion" readonly>
+            </div>
+        
+            <div class="col-md-4">
+                <label class="form-label">Estado</label>
+                <input type="text" class="form-control" value="@Model.Estado" readonly>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Email</label>
+                <input type="email" class="form-control" value="@Model.Email" readonly>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Telefono</label>
+                <input type="text" class="form-control" value="@Model.Telefono" readonly>
+            </div>
+            <div class="col-12 mb-2"></div>
+        </div>
+
+        <div class="row mb-4 bg-light p-2 border rounded">
+            <div class="col-12 border-bottom mb-2 ">
+                <h2 class="fs-4">Importes</h2>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">IVA Mensajeria</label>
+                <input type="text" class="form-control" value="@Model.IvaMensajeriaCurrency" readonly>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Servicio</label>
+                <input type="text" class="form-control" value="@Model.ServicioCurrency" readonly>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">IVA Servicio</label>
+                <input type="text" class="form-control" value="@Model.IvaServicioCurrency" readonly>
+            </div>
+        
+            <div class="col-md-4">
+                <label class="form-label">Comision Comercio</label>
+                <input type="text" class="form-control" value="@Model.ComisionComercioCurrency" readonly>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Comision Usuario</label>
+                <input type="text" class="form-control" value="@Model.ComisionUsuarioCurrency" readonly>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">IVA Comision</label>
+                <input type="text" class="form-control" value="@Model.IvaComisionCurrency" readonly>
+            </div>
+            <div class="col-md-4">
+
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Total Importe</label>
+                <input type="text" class="form-control" value="@Model.TotalImporteCurrency" readonly>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Total Cobrado</label>
+                <input type="text" class="form-control" value="@Model.TotalCobradoCurrency" readonly>
+            </div>
+            <div class="col-12 mb-2"></div>
+        </div>
+
+    </form>
+</div>

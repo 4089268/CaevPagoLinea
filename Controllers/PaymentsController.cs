@@ -9,6 +9,7 @@ using CAEV.PagoLinea.Models;
 using CAEV.PagoLinea.Services;
 using CAEV.PagoLinea.Data;
 using CAEV.PagoLinea.Helpers;
+using System.Net.Http.Headers;
 
 namespace CAEV.PagoLinea.Controllers;
 
@@ -17,13 +18,13 @@ namespace CAEV.PagoLinea.Controllers;
 public class PaymentsController : Controller
 {
     private readonly ILogger<PaymentsController> _logger;
-    private readonly IPaymentResume PaymentResume;
+    private readonly IPaymentResume paymentResumeService;
     private readonly PagoLineaContext pagoLineaContext;
 
     public PaymentsController(ILogger<PaymentsController> logger, IPaymentResume pr, PagoLineaContext context)
     {
         this._logger = logger;
-        this.PaymentResume = pr;
+        this.paymentResumeService = pr;
         this.pagoLineaContext = context;
     }
 
@@ -56,12 +57,26 @@ public class PaymentsController : Controller
         ViewBag.Page = page;
 
         // * get the payment resumes
-        viewModel.PaymentResumes = this.PaymentResume.GetPaymentResumes(viewModel.OficinaId, take, skip)
-            .Where( item => item.Fecha >= viewModel.StartDate && item.Fecha <= viewModel.EndDate)
+        viewModel.PaymentResumes = this.paymentResumeService.GetPaymentResumes(viewModel.OficinaId, take, skip)
+            .Where( item => item.Fecha.Date >= viewModel.StartDate && item.Fecha.Date <= viewModel.EndDate)
             .ToList();
 
         // * return the view
         return View(viewModel);
     }
 
+
+    [HttpGet]
+    [Route("show/{paymentId}")]
+    public ActionResult ShowPayment(int paymentId)
+    {
+        // * attempt to get the payment details
+        var paymentDetails = paymentResumeService.GetPaymentDetails(paymentId);
+        if(paymentDetails == null)
+        {
+            return NotFound();
+        }
+
+        return View(paymentDetails);
+    }
 }

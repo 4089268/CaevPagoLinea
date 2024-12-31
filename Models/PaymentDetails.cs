@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using System.Globalization;
 
 namespace CAEV.PagoLinea.Models
 {
@@ -45,49 +46,60 @@ namespace CAEV.PagoLinea.Models
         public int OficinaId { get; set; }
         public string Oficina { get; set; } = default!;
 
+
+        public string IvaMensajeriaCurrency { get => IvaMensajeria.ToString("c2", new CultureInfo("es-MX")); }
+        public string ServicioCurrency { get => Servicio.ToString("c2", new CultureInfo("es-MX")); }
+        public string IvaServicioCurrency { get => IvaServicio.ToString("c2", new CultureInfo("es-MX")); }
+        public string ComisionComercioCurrency { get => ComisionComercio.ToString("c2", new CultureInfo("es-MX")); }
+        public string ComisionUsuarioCurrency { get => ComisionUsuario.ToString("c2", new CultureInfo("es-MX")); }
+        public string IvaComisionCurrency { get => IvaComision.ToString("c2", new CultureInfo("es-MX")); }
+        public string TotalImporteCurrency { get => TotalImporte.ToString("c2", new CultureInfo("es-MX")); }
+        public string TotalCobradoCurrency { get => TotalCobrado.ToString("c2", new CultureInfo("es-MX")); }
+
+
         public static PaymentDetails FromDataReader(IDataReader reader)
         {
             return new PaymentDetails
             {
-                Id = reader.GetInt64(reader.GetOrdinal("id")),
-                Fecha = reader.GetDateTime(reader.GetOrdinal("fecha")),
-                FechaDispersion = reader.IsDBNull(reader.GetOrdinal("fecha_dispersion")) ? (DateTime?)null : reader.GetDateTime(reader.GetOrdinal("fecha_dispersion")),
-                Comercio = reader.GetString(reader.GetOrdinal("comercio")),
-                Unidad = reader.GetString(reader.GetOrdinal("unidad")),
-                Concepto = reader.GetString(reader.GetOrdinal("concepto")),
-                ReferenciaComercio = reader.GetString(reader.GetOrdinal("referencia_comercio")),
-                Orden = reader.GetString(reader.GetOrdinal("orden")),
-                Tipo = reader.GetString(reader.GetOrdinal("tipo")),
-                MedioPago = reader.GetString(reader.GetOrdinal("medio_pago")),
-                Titular = reader.GetString(reader.GetOrdinal("titular")),
-                Banco = reader.GetString(reader.GetOrdinal("banco")),
-                ReferenciaTarjeta = reader.GetString(reader.GetOrdinal("referencia_tarjeta")),
-                TipoTarjeta = reader.GetString(reader.GetOrdinal("tipo_tarjeta")),
-                Autorizacion = reader.GetString(reader.GetOrdinal("autorizacion")),
-                IvaMensajeria = reader.GetDecimal(reader.GetOrdinal("iva_mensajeria")),
-                Servicio = reader.GetDecimal(reader.GetOrdinal("servicio")),
-                IvaServicio = reader.GetDecimal(reader.GetOrdinal("iva_servicio")),
-                ComisionComercio = reader.GetDecimal(reader.GetOrdinal("comision_comercio")),
-                ComisionUsuario = reader.GetDecimal(reader.GetOrdinal("comision_usuario")),
-                IvaComision = reader.GetDecimal(reader.GetOrdinal("iva_comision")),
-                TotalImporte = reader.GetDecimal(reader.GetOrdinal("total_importe")),
-                TotalCobrado = reader.GetDecimal(reader.GetOrdinal("total_cobrado")),
-                Promocion = reader.GetString(reader.GetOrdinal("promocion")),
-                Estado = reader.GetString(reader.GetOrdinal("estado")),
-                Contrato = reader.GetString(reader.GetOrdinal("contrato")),
-                MensajeMedioPago = reader.GetString(reader.GetOrdinal("mensaje_medio_pago")),
-                Email = reader.GetString(reader.GetOrdinal("email")),
-                Telefono = reader.GetString(reader.GetOrdinal("telefono")),
-                Plataforma = reader.GetString(reader.GetOrdinal("plataforma")),
-                EstatusReclamacion = reader.GetString(reader.GetOrdinal("estatus_reclamacion")),
-                Localidad = reader.GetInt32(reader.GetOrdinal("ref_localidad")),
-                IdPadron = reader.GetInt32(reader.GetOrdinal("ref_idPadron")),
-                Af = reader.GetInt32(reader.GetOrdinal("ref_af")),
-                Mf = reader.GetInt32(reader.GetOrdinal("ref_mf")),
-                IdCuenta = reader.GetInt32(reader.GetOrdinal("cpad_idCuenta")),
-                RazonSocial = reader.GetString(reader.GetOrdinal("cpad_razonSocial")),
-                OficinaId = reader.GetInt32(reader.GetOrdinal("cpad_oficinaId")),
-                Oficina = reader.GetString(reader.GetOrdinal("oficina"))
+            Id = Convert.ToInt64(reader["id"]),
+            Fecha = Convert.ToDateTime(reader["fecha"]),
+            FechaDispersion = reader.IsDBNull(reader.GetOrdinal("fecha_dispersion")) ? (DateTime?)null : Convert.ToDateTime(reader["fecha_dispersion"]),
+            Comercio = Convert.ToString(reader["comercio"]) ?? String.Empty,
+            Unidad = Convert.ToString(reader["unidad"]) ?? String.Empty,
+            Concepto = Convert.ToString(reader["concepto"]) ?? String.Empty,
+            ReferenciaComercio = Convert.ToString(reader["referencia_comercio"]) ?? String.Empty,
+            Orden = Convert.ToString(reader["orden"]) ?? String.Empty,
+            Tipo = Convert.ToString(reader["tipo"]) ?? String.Empty,
+            MedioPago = Convert.ToString(reader["medio_pago"]) ?? String.Empty,
+            Titular = Convert.ToString(reader["titular"]) ?? String.Empty,
+            Banco = Convert.ToString(reader["banco"]) ?? String.Empty,
+            ReferenciaTarjeta = Convert.ToString(reader["referencia_tarjeta"]) ?? String.Empty,
+            TipoTarjeta = Convert.ToString(reader["tipo_tarjeta"]) ?? String.Empty,
+            Autorizacion = Convert.ToString(reader["autorizacion"]) ?? String.Empty,
+            IvaMensajeria = Convert.ToDecimal(reader["iva_mensajeria"]),
+            Servicio = Convert.ToDecimal(reader["servicio"]),
+            IvaServicio = Convert.ToDecimal(reader["iva_servicio"]),
+            ComisionComercio = Convert.ToDecimal(reader["comision_comercio"]),
+            ComisionUsuario = Convert.ToDecimal(reader["comision_usuario"]),
+            IvaComision = Convert.ToDecimal(reader["iva_comision"]),
+            TotalImporte = Convert.ToDecimal(reader["total_importe"]),
+            TotalCobrado = Convert.ToDecimal(reader["total_cobrado"]),
+            Promocion = Convert.ToString(reader["promocion"]) ?? String.Empty,
+            Estado = Convert.ToString(reader["estado"]) ?? String.Empty,
+            Contrato = Convert.ToString(reader["contrato"]) ?? String.Empty,
+            MensajeMedioPago = Convert.ToString(reader["mensaje_medio_pago"]) ?? String.Empty,
+            Email = Convert.ToString(reader["email"]) ?? String.Empty,
+            Telefono = Convert.ToString(reader["telefono"]) ?? String.Empty,
+            Plataforma = Convert.ToString(reader["plataforma"]) ?? String.Empty,
+            EstatusReclamacion = Convert.ToString(reader["estatus_reclamacion"]) ?? String.Empty,
+            Localidad = Convert.ToInt32(reader["ref_localidad"]),
+            IdPadron = Convert.ToInt32(reader["ref_idPadron"]),
+            Af = Convert.ToInt32(reader["ref_af"]),
+            Mf = Convert.ToInt32(reader["ref_mf"]),
+            IdCuenta = Convert.ToInt32(reader["cpad_idCuenta"]),
+            RazonSocial = Convert.ToString(reader["cpad_razonSocial"]) ?? String.Empty,
+            OficinaId = Convert.ToInt32(reader["cpad_oficinaId"]),
+            Oficina = Convert.ToString(reader["oficina"]) ?? String.Empty
             };
         }
 

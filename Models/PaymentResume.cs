@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using System.Globalization;
 
 namespace CAEV.PagoLinea.Models
 {
@@ -16,6 +17,8 @@ namespace CAEV.PagoLinea.Models
         public int OficinaId { get; set; }
         public string Oficina { get; set; } = default!;
         public string Concepto { get; set; } = default!;
+
+        public string TotalImporteCurrency { get => TotalImporte.ToString("c2", new CultureInfo("es-MX")); }
 
         public static PaymentResume FromDataReader(IDataReader reader)
         {
