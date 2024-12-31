@@ -17,6 +17,7 @@ builder.Services.AddDbContext<PagoLineaContext>(options=>{
 });
 builder.Services.AddScoped<PadronService>();
 builder.Services.AddScoped<InvoiceService>();
+builder.Services.AddScoped<IPaymentResume,PaymentResumeService>();
 builder.Services.Configure<MultipagoSettings>(builder.Configuration.GetSection("MultipagoSettings"));
 builder.Services.AddReCaptcha(builder.Configuration.GetSection("ReCaptcha"));
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
