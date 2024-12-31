@@ -2,14 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Diagnostics;
+using System.Globalization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.EntityFrameworkCore;
 using CAEV.PagoLinea.Models;
 using CAEV.PagoLinea.Services;
 using CAEV.PagoLinea.Data;
 using CAEV.PagoLinea.Helpers;
-using System.Net.Http.Headers;
 
 namespace CAEV.PagoLinea.Controllers;
 
@@ -82,9 +81,49 @@ public class PaymentsController : Controller
 
     [HttpGet]
     [Route("uploadPayments")]
-    public ActionResult UploadPayments()
+    public IActionResult UploadPayments()
     {
         return View();
+    }
+
+    [HttpPost]
+    [Route("uploadPayments")]
+    public IActionResult UploadPayments(IFormFile file)
+    {
+        if(file == null)
+        {
+            return Conflict("The file is required");
+        }
+
+        try
+        {
+            IEnumerable<PaymentFileRecord> records = [];
+            using( var stream = file.OpenReadStream())
+            {
+
+                var csvRecords = ProcessCSV.LoadFile(stream);
+                
+                // * map the CSV data to the Transaction model
+                records = csvRecords.Skip(1).Select( cols => PaymentFileRecordAdapter.Adapt(cols));
+            }
+
+
+            // * print the recors on the log
+            foreach(var record in records)
+            {
+                this._logger.LogDebug(record.ToString());
+            }
+
+            return View(records);
+        }
+        catch (System.Exception ex)
+        {
+            var model = new ErrorViewModel
+            {
+                RequestId = ex.Message
+            };
+            return View("Error", model);
+        }
     }
 
 }
