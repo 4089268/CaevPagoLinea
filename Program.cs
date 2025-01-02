@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Extensions.DependencyInjection;
 using AspNetCore.ReCaptcha;
+using Quartz;
 using CAEV.PagoLinea.Data;
 using CAEV.PagoLinea.Services;
-using Quartz;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -28,6 +28,11 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.AccessDeniedPath = "/";
         options.LoginPath = "/Auth/Login";
     });
+builder.Services.AddSession( options => {
+    options.IdleTimeout = TimeSpan.FromMinutes(15);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
 
 
 builder.Services.AddQuartz( q => {
@@ -83,6 +88,7 @@ if (!app.Environment.IsDevelopment()) {
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+app.UseSession();
 
 app.UseRouting();
 

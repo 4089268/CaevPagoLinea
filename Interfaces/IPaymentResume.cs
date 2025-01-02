@@ -9,11 +9,13 @@ namespace CAEV.PagoLinea.Services
     public interface IPaymentResume
     {
 
-        public ICollection<PaymentResume> GetPaymentResumes();
+        public IEnumerable<PaymentResume> GetPaymentResumes();
 
-        public ICollection<PaymentResume> GetPaymentResumes(int officeID, int take, int skip);
+        public IEnumerable<PaymentResume> GetPaymentResumes(int officeID, int take, int skip);
 
         public PaymentDetails? GetPaymentDetails(int paymentId);
+
+        public Task<IEnumerable<long>> StorePaymentRecords(IEnumerable<PaymentFileRecord> records);
 
     }
 }

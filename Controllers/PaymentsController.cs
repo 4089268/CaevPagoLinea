@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Diagnostics;
 using System.Globalization;
+using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using CAEV.PagoLinea.Models;
@@ -92,7 +93,8 @@ public class PaymentsController : Controller
     {
         if(file == null)
         {
-            return Conflict("The file is required");
+            ViewBag.ErrorMessage = "Seleccione un archivo valido para subir";
+            return View();
         }
 
         try
@@ -107,13 +109,10 @@ public class PaymentsController : Controller
                 records = csvRecords.Skip(1).Select( cols => PaymentFileRecordAdapter.Adapt(cols));
             }
 
+            // * store the records in the session
+            HttpContext.Session.SetString("paymentRecords", JsonSerializer.Serialize(records));
 
-            // * print the recors on the log
-            foreach(var record in records)
-            {
-                this._logger.LogDebug(record.ToString());
-            }
-
+            // * return the view with the records
             return View(records);
         }
         catch (System.Exception ex)
@@ -124,6 +123,31 @@ public class PaymentsController : Controller
             };
             return View("Error", model);
         }
+    }
+
+    [HttpPost]
+    [Route("storePayments")]
+    public async Task<IActionResult> StorePayments()
+    {
+        // * get the records from the session
+        var recordsJson = HttpContext.Session.GetString("paymentRecords");
+        if( recordsJson == null)
+        {
+            return Conflict("No records found");
+        }
+        IEnumerable<PaymentFileRecord> records = JsonSerializer.Deserialize<IEnumerable<PaymentFileRecord>>(recordsJson) ?? [];
+
+        // * store the records in the database
+        var recordsStored = await this.paymentResumeService.StorePaymentRecords(records);
+        foreach (var record in recordsStored)
+        {
+            this._logger.LogInformation(">>" + record.ToString());
+        }
+
+        // * update the stored flag in the records
+        records.Where( item => recordsStored.Contains( item.Id)).ToList().ForEach( item => item.Stored = true);
+        
+        return View(records);
     }
 
 }

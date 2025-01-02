@@ -1,0 +1,105 @@
+﻿@model IEnumerable<PaymentFileRecord>
+@{
+    ViewData["Title"] = "Pagos Realizados";
+    var currentCulture = new System.Globalization.CultureInfo("es-MX");
+}
+
+<div class="row">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item" aria-current="page">
+                <a asp-action="Dashboard" asp-controller="Auth">Dashboard</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">
+                <a asp-action="Index" asp-controller="Payments">Pagos Realizados</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">
+                <a asp-action="UploadPayments" asp-controller="Payments">Cargar Pagos</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">
+                Pagos Almacenados
+            </li>
+        </ol>
+    </nav>
+</div>
+
+<div class="row mt-1 mb-4">
+    <h1 class="text-center text-uppercase" style="font-size: 1.75rem;">Registro de Pagos Almacenados</h1>
+</div>
+
+
+<ul class="nav nav-tabs" id="myTab" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane" type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">
+            <h2 class="text-uppercase" style="font-size: 1.25rem;">Resumen por Conceptos</h2>
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">
+            <h2 class="text-uppercase" style="font-size: 1.25rem;">Detalle Pagos</h2>
+        </button>
+    </li>
+</ul>
+
+<div class="tab-content border p-2" id="myTabContent">
+    <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
+        <div class="row overflow-scroll" style="max-height: 70vh;">
+            @{
+                var groups = @Model.GroupBy( item => item.Concepto).ToList();
+                foreach( var g in groups)
+                {
+                    <div class="col-3 my-1">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title text-truncate" style="font-size: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">@g.Key</h5>
+                            </div>
+                            <div class="card-body d-flex flex-column pb-2">
+                                <label>@g.Count() Pagos</label>
+                                <label class="text-success">Almacenados: @g.Where(i => i.Stored).Count()</label>
+                                <label class="text-warning">Omitidos: @g.Where(i => !i.Stored).Count()</label>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+
+    <div class="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
+        <div class="row overflow-scroll" style="max-height: 70vh;">
+            <div class="col-12">
+                <table class="table table-striped table-bordered table-hover">
+                    <thead class="sticky-top bg-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Id</th>
+                            <th>Concepto</th>
+                            <th>Fecha</th>
+                            <th>Referencia</th>
+                            <th>Valor</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            var i = 1;
+                        }
+                        @foreach (PaymentFileRecord item in Model!.OrderBy( item => item.Id))
+                        {
+                            <tr class="@((item.Stored) ? "table-success" : "")">
+                                <td>@i</td>
+                                <td>@item.Id</td>
+                                <td>@item.Concepto</td>
+                                <td>@item.Fecha</td>
+                                <td>@item.ReferenciaComercio</td>
+                                <td>@item.TotalCobrado.ToString("c2", currentCulture)</td>
+                                <td>@item.Estado</td>
+                            </tr>
+                            i++;
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

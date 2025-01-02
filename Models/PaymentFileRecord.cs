@@ -37,6 +37,13 @@ namespace CAEV.PagoLinea.Models
         public string Plataforma { get; set; } = string.Empty;
         public string EstatusReclamacion { get; set; } = string.Empty;
 
+
+        /// <summary>
+        /// determina si el registro ya fue almacenado en la base de datos
+        /// </summary>
+        /// <value></value>
+        public bool Stored { get; set; } = false;
+
         public override string ToString()
         {
             return $"ID: {Id}, Concepto: {Concepto} Fecha: {Fecha}, Comercio: {Comercio}, TotalImporte: {TotalImporte}, Estado: {Estado}";
