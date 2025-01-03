@@ -192,6 +192,83 @@ namespace CAEV.PagoLinea.Services
             return recordDetails;
         }
 
+        public IEnumerable<PaymentDetails> GetPaymentDetailsOffice(int officeId, DateTime from, DateTime to)
+        {
+            List<PaymentDetails> recordDetails = new();
+            
+            var query = @"
+            SELECT id,
+                fecha,
+                fecha_dispersion,
+                comercio,
+                unidad,
+                concepto,
+                referencia_comercio,
+                orden,
+                tipo,
+                medio_pago,
+                titular,
+                banco,
+                referencia_tarjeta,
+                tipo_tarjeta,
+                autorizacion,
+                mensajeria,
+                iva_mensajeria,
+                servicio,
+                iva_servicio,
+                comision_comercio,
+                comision_usuario,
+                iva_comision,
+                total_importe,
+                total_cobrado,
+                promocion,
+                estado,
+                contrato,
+                mensaje_medio_pago,
+                email,
+                telefono,
+                plataforma,
+                estatus_reclamacion,
+                ref_localidad,
+                ref_idPadron,
+                ref_af,
+                ref_mf,
+                cpad_idCuenta,
+                cpad_razonSocial,
+                cpad_oficinaId,
+                oficina
+            FROM [dbo].[vw_ConciliacionBancoDetails]
+            WHERE cpad_oficinaId = @oficinaId and fecha >= @from and fecha <= @to"; ;
+
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(configuration.GetConnectionString("PagoLinea"))) {
+                    SqlCommand command = new SqlCommand(query, connection);
+                    command.CommandTimeout = commandTimeout;
+                    command.Parameters.AddWithValue("@oficinaId", officeId);
+                    command.Parameters.AddWithValue("@from", from.Date);
+                    command.Parameters.AddWithValue("@to", to.Date);
+                    connection.Open();
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            recordDetails.Add( PaymentDetails.FromDataReader(reader));
+                        }
+                    }
+                }
+            }
+            catch (SqlException ex)
+            {
+                this.logger.LogError(ex, "SQL Error at get the details of the office '{id}': {m}", officeId, ex.Message);
+            }
+            catch (Exception ex) {
+                this.logger.LogError(ex, "Error at get the details of the office '{id}': {m}", officeId, ex.Message);
+            }
+
+            return recordDetails;
+        }
+
         public async Task<IEnumerable<long>> StorePaymentRecords(IEnumerable<PaymentFileRecord> records)
         {
             var storedIds = new List<long>();

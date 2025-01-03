@@ -15,6 +15,8 @@ namespace CAEV.PagoLinea.Services
 
         public PaymentDetails? GetPaymentDetails(int paymentId);
 
+        public IEnumerable<PaymentDetails> GetPaymentDetailsOffice(int officeId, DateTime from, DateTime to);
+
         public Task<IEnumerable<long>> StorePaymentRecords(IEnumerable<PaymentFileRecord> records);
 
     }

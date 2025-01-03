@@ -23,13 +23,19 @@
 <div class="container">
     <div class="row">
         <div class="col-md-4 d-flex align-items-center pt-4">
-            <a href="#" class="btn btn-success btn-sm mr-1 me-1">
+            <a  asp-action="ExportPayments"
+                asp-controller="Payments"
+                asp-route-oficinaId="@Model.OficinaId"
+                asp-route-startDate="@Model.StartDate.ToString("yyyy-MM-dd")"
+                asp-route-endDate="@Model.EndDate.ToString("yyyy-MM-dd")"
+                class="btn btn-success btn-sm mr-1 me-1"
+            >
                 <div class="d-inline-block me-1 mr-1">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-excel-fill" viewBox="0 0 16 16">
                     <path d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0M9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1M5.884 6.68 8 9.219l2.116-2.54a.5.5 0 1 1 .768.641L8.651 10l2.233 2.68a.5.5 0 0 1-.768.64L8 10.781l-2.116 2.54a.5.5 0 0 1-.768-.641L7.349 10 5.116 7.32a.5.5 0 1 1 .768-.64"/>
                     </svg>
                 </div>
-                Action 1
+                Exportar Datos
             </a>
             <a asp-action="UploadPayments" asp-controller="Payments" class="btn btn-primary btn-sm mr-1 me-1">
                 <div class="d-inline-block me-1 mr-1">
@@ -72,6 +78,7 @@
             <table class="table table-striped">
                 <thead>
                     <tr>
+                        <th>#</th>
                         <th>Oficina</th>
                         <th>Cuenta</th>
                         <th>Razon Social</th>
@@ -84,9 +91,13 @@
                     </tr>
                 </thead>
                 <tbody>
+                    @{
+                        var i = 1;
+                    }
                     @foreach (var resume in Model.PaymentResumes)
                     {
                         <tr>
+                            <td>@i</td>
                             <td>@resume.Oficina</td>
                             <td>@resume.IdCuenta</td>
                             <td>@resume.RazonSocial</td>
@@ -99,6 +110,7 @@
                                 <a type="button" asp-action="ShowPayment" asp-controller="Payments" asp-route-paymentId="@resume.Id" class="btn btn-primary btn-sm rounded">Detalle</a>
                             </td>
                         </tr>
+                        i++;
                     }
                 </tbody>
             </table>
